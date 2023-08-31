@@ -3,4 +3,5 @@ type Bindings = {
   DB_USERNAME: string;
   DB_PASSWORD: string;
   ENV: string;
+  SECRET_KEY: string
 };

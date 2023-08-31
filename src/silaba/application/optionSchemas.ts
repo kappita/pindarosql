@@ -1,4 +1,4 @@
-import { silabaOption } from "../shared/types"
+import { silabaOption } from "../../shared/types"
 const options = [
   [
     {value: 1, answer: "Una sílaba"},

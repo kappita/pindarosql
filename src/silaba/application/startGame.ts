@@ -1,9 +1,9 @@
 import type { Connection } from "@planetscale/database";
 import { z } from "zod";
-import { uploadSilabasSchema } from "../shared/schemas"
-import { validateAdmin } from "../shared/validateAdmin"
-import { createSession } from "../shared/createSession"
-import { silaba, silabaQuestion } from "../shared/types"
+import { uploadSilabasSchema } from "../../shared/schemas"
+import { validateAdmin } from "../../shared/validateAdmin"
+import { createSession } from "../../shared/createSession"
+import { silaba, silabaQuestion } from "../../shared/types"
 import { addSilabasToSession } from "./addSilabasToSession"
 import { getSilabas } from "./getSilabas"
 import { selectSchema } from "./optionSchemas"

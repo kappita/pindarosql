@@ -1,5 +1,5 @@
 import type { Connection } from "@planetscale/database";
-import { v4 } from "uuid"
+import { v4 } from 'uuid'
 export async function createSession(difficulty: number, db: Connection) {
   const sessionId = v4()
   console.log(`

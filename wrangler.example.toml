@@ -8,6 +8,7 @@ ENV = "development"
 DB_HOST = ""
 DB_USERNAME = ""
 DB_PASSWORD = ""
+SECRET_KEY = ""
 
 
 # production environment
@@ -18,3 +19,4 @@ ENV = "production"
 DB_HOST = ""
 DB_USERNAME = ""
 DB_PASSWORD = ""
+SECRET_KEY = ""

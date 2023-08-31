@@ -1,8 +1,8 @@
 import type { Connection } from "@planetscale/database";
 import { z } from "zod";
-import { uploadSilabasSchema } from "../shared/schemas"
-import { validateAdmin } from "../shared/validateAdmin"
-import { silaba, silabaQuestion } from "../shared/types"
+import { uploadSilabasSchema } from "../../shared/schemas"
+import { validateAdmin } from "../../shared/validateAdmin"
+import { silaba, silabaQuestion } from "../../shared/types"
 import { selectSchema } from "./optionSchemas"
 
 export async function addSilabasToSession(sessionId: string, questions: silabaQuestion[], db: Connection) {

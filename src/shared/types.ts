@@ -18,3 +18,10 @@ export type silabaQuestion = {
   options: silabaOption[]
   optionSchemaId: number
 }
+
+export type user = {
+  name: string,
+  course: string,
+  email: string,
+  password: string
+}

@@ -1,10 +1,9 @@
 import type { Connection } from "@planetscale/database";
-import { z } from "zod";
-import { uploadSilabasSchema } from "../../shared/schemas"
+import { sessionAnswers } from "../../shared/schemas"
 import { validateAdmin } from "../../shared/validateAdmin"
 
-export async function addSilaba(body: any, db: Connection) {
-  const bodyValidation = uploadSilabasSchema.safeParse(body);
+export async function submitAnswers(body: any, db: Connection) {
+  const bodyValidation = sessionAnswers.safeParse(body);
 
   if (!bodyValidation.success) {
     return {
@@ -14,14 +13,8 @@ export async function addSilaba(body: any, db: Connection) {
   }
   const data = bodyValidation.data
 
-  if (!(await validateAdmin(data.adminEmail, data.adminPassword, db)).success) {
-    return {
-      success: false
-    }
-  }
-
   const uploadQuery = await db.execute(`
-    INSERT INTO Silaba (word, answer, difficulty)
+    SELECT FROM (GameSession INNER JOIN SilabaGame ON SilabaGame.session_id = GameSession.id) (word, answer, difficulty)
     VALUES ${data.silabas.map(e => `(${e.word}, ${e.answer_value}, ${e.difficulty})`).join(",")};
   `);
   return {

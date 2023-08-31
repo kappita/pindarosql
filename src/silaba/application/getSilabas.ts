@@ -1,7 +1,7 @@
 import type { Connection } from "@planetscale/database";
 import { z } from "zod";
-import { uploadSilabasSchema } from "../shared/schemas"
-import { validateAdmin } from "../shared/validateAdmin"
+import { uploadSilabasSchema } from "../../shared/schemas"
+import { validateAdmin } from "../../shared/validateAdmin"
 
 export async function getSilabas(difficulty: number, amount: number, db: Connection) {
 
