@@ -25,3 +25,16 @@ export type user = {
   email: string,
   password: string
 }
+
+export type userAnswers = {
+  question_id: string,
+  answer: number
+}
+
+export type silabaQuestionResponse = {
+  session_difficulty: number
+  game_id: number,
+  option_schema_id: number,
+  silaba_id: number,
+  silaba_answer: number
+}

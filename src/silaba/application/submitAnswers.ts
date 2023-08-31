@@ -8,15 +8,31 @@ export async function submitAnswers(body: any, db: Connection) {
   if (!bodyValidation.success) {
     return {
       success: false,
-      payload: bodyValidation.error,
+      payload: {
+        message: bodyValidation.error
+      }
     };
   }
   const data = bodyValidation.data
 
-  const uploadQuery = await db.execute(`
-    SELECT FROM (GameSession INNER JOIN SilabaGame ON SilabaGame.session_id = GameSession.id) (word, answer, difficulty)
-    VALUES ${data.silabas.map(e => `(${e.word}, ${e.answer_value}, ${e.difficulty})`).join(",")};
-  `);
+  const questionsQuery = await db.execute(`SELECT SilabaGame.id, Silaba.id, Silaba.answer,  FROM 
+    ((GameSession INNER JOIN SilabaGame
+      ON SilabaGame.session_id = GameSession.id)
+      INNER JOIN 
+      Silaba ON Silaba.id = SilabaGame.silaba_id) WHERE GameSession.id = "${data.session_id}";`)
+  
+  
+  if (questionsQuery.size == 0) {
+    return {
+      success: false,
+      payload: {
+        message: "The game session does not exist!"
+      }
+    }
+  }
+
+
+
   return {
     success: true,
   };

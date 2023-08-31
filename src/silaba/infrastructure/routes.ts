@@ -26,6 +26,12 @@ silabas.get("/start/:difficulty", async (c) => {
   return c.json({success: true, payload: {message: game.payload.message, game: game.payload.game}}, 200)
 })
 
+silabas.post("/submit", async (c) => {
+  const conn = connect(getDatabaseConfig(c.env))
+  const body = await c.req.json()
+  
+})
+
 export default silabas
 
 
