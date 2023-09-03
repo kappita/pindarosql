@@ -1,22 +1,20 @@
 import type { Connection } from "@planetscale/database";
 import { v4 } from 'uuid'
-export async function createSession(difficulty: number, db: Connection) {
+export async function createSession(difficulty: number, gameType: number, db: Connection) {
   const sessionId = v4()
-  console.log(`
-  INSERT INTO GameSession (id, difficulty) VALUES ("${sessionId}", ${difficulty});
-`)
+
   const query = await db.execute(`
-    INSERT INTO GameSession (id, difficulty) VALUES ("${sessionId}", ${difficulty});
+    INSERT INTO GameSession (id, difficulty, game_type_id) VALUES ("${sessionId}", ${difficulty}, ${gameType});
   `);
 
   if (query.rowsAffected != 1) {
     return {
       success: false,
-      payload: {message: "Error creating session", sessionId: null}
+      payload: {message: "Error creating session", session_id: null}
     }
   }
   return {
     success: true,
-    payload: {message: "Session created successfully", sessionId: sessionId}
+    payload: {message: "Session created successfully", session_id: sessionId}
   }
 }

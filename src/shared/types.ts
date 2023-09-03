@@ -16,7 +16,7 @@ export type silabaQuestion = {
   word: string
   id: number
   options: silabaOption[]
-  optionSchemaId: number
+  option_schema_id: number
 }
 
 export type user = {
@@ -27,14 +27,84 @@ export type user = {
 }
 
 export type userAnswers = {
-  question_id: string,
+  question_id: number,
   answer: number
 }
 
 export type silabaQuestionResponse = {
   session_difficulty: number
-  game_id: number,
-  option_schema_id: number,
-  silaba_id: number,
+  creation_date: Date
+  game_id: number
+  option_schema_id: number
+  silaba_id: number
+  word: string
   silaba_answer: number
+}
+export type silabaCorrection = {
+  game_id: number,
+  silaba_id: number,
+  silaba_word: string,
+  silaba_answer: number
+  user_answer_value: number,
+  user_answer: string,
+  options: silabaOption[],
+  is_correct: boolean
+}
+
+export type userSubmit = {
+  session_id: string
+  email: string | null
+  password: string | null
+  answers: userAnswers[]
+}
+
+export type acentualPreGame = {
+  acentual_id: number
+  acentual_phrase: string
+  acentual_words: string
+  acentual_word: string
+  acentual_word_pos: number
+  acentual_answer: number
+}
+
+export type acentualQuestionResponse = {
+  session_difficulty: number
+  creation_date: Date
+  game_id: number
+  option_schema_id: number
+  word: string
+  word_id: number
+  acentual_phrase: string
+  acentual_answer: number
+  word_pos: number
+}
+
+export type acentual = {
+  acentual_id: number,
+  phrase: string,
+  word_id: number,
+  word: string,
+  word_pos: number,
+  answer: number
+}
+
+export type acentualQuestion = {
+  id: number,
+  phrase: string,
+  word: string,
+  word_pos: number,
+  options: silabaOption[],
+  option_schema_id: number
+}
+
+export type acentualCorrection = {
+  game_id: number,
+  word_id: number,
+  word: string,
+  acentual_phrase: string,
+  acentual_answer: number,
+  user_answer_value: number,
+  user_answer: string,
+  options: silabaOption[],
+  is_correct: boolean
 }

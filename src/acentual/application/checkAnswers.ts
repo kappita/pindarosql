@@ -1,12 +1,12 @@
 import { Connection } from "@planetscale/database";
-import { silabaCorrection, silabaQuestionResponse, userSubmit } from "../../shared/types";
-import { options } from "./optionSchemas";
+import { acentualCorrection, acentualQuestionResponse, silabaCorrection, silabaQuestionResponse, userSubmit } from "../../shared/types";
+import { allOptions } from "./optionSchemas";
 import { uploadAnswers } from "./uploadAnswers";
 
 const scores = [ 100, 125, 150, 200 ]
-const answerStrings = [ "Sin respuesta", "Una sílaba", "Dos sílabas", "Tres sílabas", "Cuatro sílabas", "Cinco sílabas", "Seis sílabas", "Siete sílabas", "Ocho sílabas"]
+const answerStrings = [ "Sin respuesta", "Monosílabo átono", "Monosílabo tónico", "Bisílabo átono", "Aguda", "Grave", "Esdrújula", "Sobreesdrújula"]
 
-export async function checkAnswers(answers: userSubmit, questions:silabaQuestionResponse[], db: Connection) {
+export async function checkAnswers(answers: userSubmit, questions:acentualQuestionResponse[], db: Connection) {
   if (answers.answers.length != questions.length) {
     return {
       success: false,
@@ -22,10 +22,10 @@ export async function checkAnswers(answers: userSubmit, questions:silabaQuestion
 
   let score = 0
   let correct = 0
-  let corrections: silabaCorrection[] = []
+  let corrections: acentualCorrection[] = []
 
   for(let i = 0; i < questions.length; i++) {
-    const answer = answers.answers.find(e => {return e.question_id === questions[i].silaba_id})
+    const answer = answers.answers.find(e => {return e.question_id === questions[i].word_id})
     if (!answer) {
       return {
         success: false,
@@ -39,7 +39,7 @@ export async function checkAnswers(answers: userSubmit, questions:silabaQuestion
         }
       }
     }
-    const is_correct = (questions[i].silaba_answer === answer.answer) ? true : false
+    const is_correct = (questions[i].acentual_answer === answer.answer) ? true : false
     if (is_correct) {
       score += scores[questions[0].session_difficulty]
       correct ++
@@ -47,12 +47,13 @@ export async function checkAnswers(answers: userSubmit, questions:silabaQuestion
     }
     corrections.push({
       game_id: questions[i].game_id,
-      silaba_id: questions[i].silaba_id,
-      silaba_word: questions[i].word,
-      silaba_answer: questions[i].silaba_answer,
+      word_id: questions[i].word_id,
+      word: questions[i].word,
+      acentual_phrase: questions[i].acentual_phrase,
+      acentual_answer: questions[i].acentual_answer,
       user_answer_value: answer.answer,
       user_answer: answerStrings[answer.answer],
-      options: options[questions[i].option_schema_id],
+      options: allOptions[questions[i].session_difficulty][questions[i].option_schema_id],
       is_correct: is_correct
     })
   }

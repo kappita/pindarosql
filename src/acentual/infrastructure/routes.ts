@@ -2,7 +2,7 @@ import { Hono } from 'hono';
 import { startGame } from '../application/startGame';
 import { connect, Config } from "@planetscale/database";
 import { submitAnswers } from '../application/submitAnswers';
-import { addSilaba } from '../application/addSilaba';
+import { addAcentual } from '../application/addAcentual';
 
 export function getDatabaseConfig(env: Bindings) {
   return {
@@ -16,9 +16,16 @@ export function getDatabaseConfig(env: Bindings) {
   } as Config;
 }
 
-const silabas = new Hono<{ Bindings: Bindings }>()
+const acentual = new Hono<{ Bindings: Bindings }>()
 
-silabas.get("/start/:difficulty", async (c) => {
+acentual.get("/poto", async (c) => {
+  const conn = connect(getDatabaseConfig(c.env))
+  const bruh = await conn.execute('INSERT INTO AcentualWord (word, word_pos, acentual_id) VALUES ("Poto1", 1, 3), ("Poto2", 1, 3);')
+  console.log(JSON.stringify(bruh))
+  return c.text(":3")
+})
+
+acentual.get("/start/:difficulty", async (c) => {
   const conn = connect(getDatabaseConfig(c.env))
   const diff = parseInt(c.req.param("difficulty"))
   const game = await startGame(diff, conn)
@@ -28,7 +35,7 @@ silabas.get("/start/:difficulty", async (c) => {
   return c.json({success: true, payload: {message: game.payload.message, game: game.payload.game}}, 200)
 })
 
-silabas.post("/submit", async (c) => {
+acentual.post("/submit", async (c) => {
   const conn = connect(getDatabaseConfig(c.env))
   const body = await c.req.json()
   const submit = await submitAnswers(body, conn)
@@ -39,17 +46,17 @@ silabas.post("/submit", async (c) => {
   
 })
 
-silabas.post("/uploadSilaba", async (c) => {
+
+acentual.post("/uploadAcentual", async (c) => {
   const conn = connect(getDatabaseConfig(c.env))
   const body = await c.req.json()
-  const upload = await addSilaba(body, conn)
+  const upload = await addAcentual(body, conn)
   if (!upload.success) {
     return c.json({success: false, payload: upload.payload.message}, 400)
   }
   return c.json({success: true, payload: upload.payload}, 200)
-
 })
 
-export default silabas
+export default acentual
 
 

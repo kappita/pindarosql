@@ -1,5 +1,5 @@
 import { silabaOption } from "../../shared/types"
-const options = [
+export const options = [
   [
     {value: 1, answer: "Una sílaba"},
     {value: 2, answer: "Dos sílabas"},

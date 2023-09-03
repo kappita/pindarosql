@@ -34,6 +34,7 @@ export async function submitAnswers(body: any, db: Connection) {
     }
   }
 
+
   const check = await checkAnswers(data, questions.payload.questions!, db)
 
   if (!check.success) {

@@ -13,7 +13,7 @@ export async function addAdmin(body: any, secretKey: string, db: Connection) {
     };
   }
   const data = bodyValidation.data
-  if (data.secretKey != secretKey) {
+  if (data.secret_key != secretKey) {
     return {
         success: false,
         payload: {

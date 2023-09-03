@@ -2,15 +2,15 @@ import type { Connection } from "@planetscale/database";
 import { z } from "zod";
 import { uploadSilabasSchema } from "../../shared/schemas"
 import { validateAdmin } from "../../shared/validateAdmin"
-import { silaba, silabaQuestion } from "../../shared/types"
+import { acentualQuestion, silaba, silabaQuestion } from "../../shared/types"
 import { selectSchema } from "./optionSchemas"
 
-export async function addSilabasToSession(sessionId: string, questions: silabaQuestion[], db: Connection) {
+export async function addAcentualesToSession(sessionId: string, questions: acentualQuestion[], db: Connection) {
 
 
   const uploadQuery = await db.execute(`
-    INSERT INTO SilabaGame (session_id, silaba_id, option_schema_id)
-    VALUES ${questions.map(e => `("${sessionId}", ${e.id}, ${e.optionSchemaId})`).join(",")};
+    INSERT INTO AcentualGame (session_id, word_id, option_schema_id)
+    VALUES ${questions.map(e => `("${sessionId}", ${e.id}, ${e.option_schema_id})`).join(",")};
   `);
 
   if (uploadQuery.rowsAffected != questions.length) {

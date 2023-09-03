@@ -1,16 +1,14 @@
 import type { Connection } from "@planetscale/database";
-import { z } from "zod";
-import { uploadSilabasSchema } from "../../shared/schemas"
-import { validateAdmin } from "../../shared/validateAdmin"
+
 import { createSession } from "../../shared/createSession"
-import { silaba, silabaQuestion } from "../../shared/types"
-import { addSilabasToSession } from "./addSilabasToSession"
-import { getSilabas } from "./getSilabas"
+import { acentualQuestion } from "../../shared/types"
+import { addAcentualesToSession } from "./addAcentualesToSession"
+import { getAcentuales } from "./getAcentuales"
 import { selectSchema } from "./optionSchemas"
 
 export async function startGame(difficulty: number, db: Connection) {
-  let rows = await getSilabas(difficulty, 10, db)
-  if (!rows.success || !rows.payload.silabas) {
+  let rows = await getAcentuales(difficulty, 10, db)
+  if (!rows.success || !rows.payload.acentuales) {
     return {
       success: false,
       payload: {
@@ -20,15 +18,15 @@ export async function startGame(difficulty: number, db: Connection) {
     }
   }
 
-  const silabas = rows.payload.silabas as silaba[]
-  const silabaQuestions: silabaQuestion[] = silabas.map(e => {
-    const schema = selectSchema(e.answer)
+  const acentualQuestions: acentualQuestion[] = rows.payload.acentuales.map(e => {
+    const schema = selectSchema(e.answer, difficulty)
     return {
-    id: e.id, options: schema.options, optionSchemaId: schema.schemaId, word: e.word
+            id: e.word_id, phrase: e.phrase, word: e.word, word_pos: e.word_pos, options: schema.options, option_schema_id: schema.schemaId
     }
   })
 
-  const session = await createSession(difficulty, 1, db)
+  // 2 FOR ACENTUAL GAME
+  const session = await createSession(difficulty, 2, db)
   if (!session.success || !session.payload.session_id) {
     return {
       success: false,
@@ -39,7 +37,7 @@ export async function startGame(difficulty: number, db: Connection) {
     }
   }
 
-  const game = await addSilabasToSession(session.payload.session_id, silabaQuestions, db)
+  const game = await addAcentualesToSession(session.payload.session_id, acentualQuestions, db)
   
   if (!game.success) {
     return {
@@ -57,7 +55,7 @@ export async function startGame(difficulty: number, db: Connection) {
       message: "Game created successfully",
       game: {
         session_id: session.payload.session_id,
-        questions: silabaQuestions
+        questions: acentualQuestions
       }
     }
   }

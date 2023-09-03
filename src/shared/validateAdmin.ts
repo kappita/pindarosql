@@ -6,11 +6,11 @@ export async function validateAdmin(email: string, password: string,  db: Connec
   `);
   if (query.rows.length < 1) {
     return {
-      success: true
+      success: false
     }
   }
   return {
-    success: false
+    success: true
   }
 }
 
