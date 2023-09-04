@@ -11,10 +11,11 @@ export async function getAcentuales(difficulty: number, amount: number, db: Conn
       acentualQuery = await db.execute(`SELECT Acentual.id acentual_id, Acentual.phrase phrase, AcentualWord.id word_id, AcentualWord.word word, AcentualWord.word_pos word_pos, AcentualWord.answer answer FROM Acentual INNER JOIN AcentualWord ON Acentual.id = AcentualWord.acentual_id WHERE answer > 3 ORDER BY RAND() LIMIT ${amount};`)
       break
     case 1:
-      acentualQuery = await db.execute(`
-    SELECT Acentual.id acentual_id, Acentual.phrase phrase, AcentualWord.id word_id, AcentualWord.word word_word, AcentualWord.word_pos word_pos, AcentualWord.answer word_answer FROM Acentual INNER JOIN AcentualWord ON Acentual.id = AcentualWord.acentual_id WHERE answer > 3 ORDER BY RAND() LIMIT ${amount};`)
+      acentualQuery = await db.execute(`SELECT Acentual.id acentual_id, Acentual.phrase phrase, AcentualWord.id word_id, AcentualWord.word word, AcentualWord.word_pos word_pos, AcentualWord.answer answer FROM Acentual INNER JOIN AcentualWord ON Acentual.id = AcentualWord.acentual_id WHERE answer > 3 OR answer < 3 ORDER BY RAND() LIMIT ${amount};`)
+      break
     default:
-      acentualQuery = await db.execute(`SELECT Acentual.id acentual_id, Acentual.phrase phrase, AcentualWord.id word_id, AcentualWord.word word_word, AcentualWord.word_pos word_pos, AcentualWord.answer word_answer FROM Acentual INNER JOIN AcentualWord ON Acentual.id = AcentualWord.acentual_id ORDER BY RAND() LIMIT ${amount};`)
+      acentualQuery = await db.execute(`SELECT Acentual.id acentual_id, Acentual.phrase phrase, AcentualWord.id word_id, AcentualWord.word word, AcentualWord.word_pos word_pos, AcentualWord.answer answer FROM Acentual INNER JOIN AcentualWord ON Acentual.id = AcentualWord.acentual_id ORDER BY RAND() LIMIT ${amount};`)
+      break
   }
 
   if (acentualQuery.size < amount) {
