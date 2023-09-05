@@ -24,7 +24,7 @@ export async function startGame(difficulty: number, db: Connection) {
   const silabaQuestions: silabaQuestion[] = silabas.map(e => {
     const schema = selectSchema(e.answer)
     return {
-    id: e.id, options: schema.options, optionSchemaId: schema.schemaId, word: e.word
+    id: e.id, options: schema.options, option_schema_id: schema.schemaId, word: e.word
     }
   })
 

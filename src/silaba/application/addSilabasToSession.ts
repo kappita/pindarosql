@@ -10,7 +10,7 @@ export async function addSilabasToSession(sessionId: string, questions: silabaQu
 
   const uploadQuery = await db.execute(`
     INSERT INTO SilabaGame (session_id, silaba_id, option_schema_id)
-    VALUES ${questions.map(e => `("${sessionId}", ${e.id}, ${e.optionSchemaId})`).join(",")};
+    VALUES ${questions.map(e => `("${sessionId}", ${e.id}, ${e.option_schema_id})`).join(",")};
   `);
 
   if (uploadQuery.rowsAffected != questions.length) {
