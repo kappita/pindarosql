@@ -1,4 +1,5 @@
 import { Hono } from 'hono'
+import { cors } from 'hono/cors'
 import silabas from './silaba/infrastructure/routes';
 import users from './user/infrastructure/routes';
 import acentual from './acentual/infrastructure/routes';
@@ -16,6 +17,7 @@ app.get("/", async (c) => {
   return c.json({ success: false, payload: "Environment not found" });
 });
 
+app.use("/*", cors())
 app.route("/silabas", silabas)
 app.route("/users", users)
 app.route("/acentual", acentual)

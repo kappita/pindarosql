@@ -10,9 +10,9 @@ export async function getLeaderboards(db: Connection) {
     success: true,
     payload: {
       message: "Leaderboards retrieved successfully",
-      silabaLeaderboard: await silabaLeaderboard,
-      acentualLeaderboard: await acentualLeaderboard,
-      rimasLeaderboard: await rimasLeaderboard
+      silabaLeaderboard: (await silabaLeaderboard).payload,
+      acentualLeaderboard: (await acentualLeaderboard).payload,
+      rimasLeaderboard: (await rimasLeaderboard).payload
     }
   }
 }

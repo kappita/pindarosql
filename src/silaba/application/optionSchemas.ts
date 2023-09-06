@@ -45,6 +45,7 @@ function getRandomInt(max: number) {
 
 export function selectSchema(correctAnswer: number): {options: silabaOption[], schemaId: number} {
   const value = correctAnswer - getRandomInt(3) - 1
-  return {options: options[value], schemaId: value >= 0 ? value : 0}
+  const optionValue = value >= 0 ? value: 0
+  return {options: options[optionValue], schemaId: optionValue}
 
 }
