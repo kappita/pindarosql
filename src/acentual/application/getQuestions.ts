@@ -3,10 +3,11 @@ import { acentualQuestionResponse, silabaQuestionResponse } from "../../shared/t
 
 export async function getQuestions(session_id: string, db: Connection) {
   const questionsQuery = await db.execute(`SELECT GameSession.difficulty session_difficulty,
-                                                  GameSession.creation_date,
+                                                  GameSession.creation_date creation_date,
                                                   AcentualGame.id game_id,
                                                   AcentualGame.option_schema_id,
                                                   AcentualWord.id word_id,
+                                                  AcentualWord.word word,
                                                   Acentual.phrase acentual_phrase,
                                                   AcentualWord.answer acentual_answer,
                                                   AcentualWord.word_pos word_pos
@@ -16,7 +17,7 @@ export async function getQuestions(session_id: string, db: Connection) {
                                                     INNER JOIN 
                                                     AcentualWord ON AcentualWord.id = AcentualGame.word_id) INNER JOIN Acentual ON Acentual.id = AcentualWord.acentual_id)  WHERE GameSession.id = "${session_id}" AND GameSession.is_answered = 0;`)
   
-  
+  console.log("poto")
   if (questionsQuery.size == 0) {
     return {
       success: false,
