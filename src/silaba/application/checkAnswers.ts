@@ -49,7 +49,7 @@ export async function checkAnswers(answers: userSubmit, questions:silabaQuestion
       game_id: questions[i].game_id,
       silaba_id: questions[i].silaba_id,
       silaba_word: questions[i].word,
-      silaba_answer: questions[i].silaba_answer,
+      answer: questions[i].silaba_answer,
       user_answer_value: answer.answer,
       user_answer: answerStrings[answer.answer],
       options: options[questions[i].option_schema_id],
