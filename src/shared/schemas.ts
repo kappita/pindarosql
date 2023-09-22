@@ -7,27 +7,27 @@ export const silabaSchema = z.object({
 })
 
 export const uploadSilabasSchema = z.object({
-  admin_email: z.string(),
+  admin_email: z.string().email(),
   admin_password: z.string(),
   silabas: z.array(silabaSchema)
 })
 
 export const addUserSchema = z.object({
-  email: z.string(),
-  password: z.string(),
+  email: z.string().email(),
+  password: z.string().min(8),
   course: z.string(),
   name: z.string(),
 })
 
 export const addAdminSchema = z.object({
-  email: z.string(),
-  password: z.string(),
+  email: z.string().email(),
+  password: z.string().min(10),
   name: z.string(),
   secret_key: z.string()
 })
 
 export const loginSchema = z.object({
-  email: z.string(),
+  email: z.string().email(),
   password: z.string()
 })
 
