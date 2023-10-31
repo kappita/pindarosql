@@ -1,12 +1,17 @@
 import { Connection } from "@planetscale/database";
-import { acentualCorrection, acentualQuestionResponse, silabaCorrection, silabaQuestionResponse, userSubmit } from "../../shared/types";
+import { userSubmit } from "../../shared/types";
 import { allOptions } from "./optionSchemas";
 import { uploadAnswers } from "./uploadAnswers";
+import { acentualSessionAnswers, acentualCorrection } from "./types";
 
 const scores = [ 100, 125, 150, 200 ]
 const answerStrings = [ "Sin respuesta", "Monosílabo átono", "Monosílabo tónico", "Bisílabo átono", "Aguda", "Grave", "Esdrújula", "Sobreesdrújula"]
 
-export async function checkAnswers(answers: userSubmit, questions:acentualQuestionResponse[], db: Connection) {
+export async function checkAnswers(answers: userSubmit, sessionAnswers:acentualSessionAnswers, db: Connection) {
+  const questions = sessionAnswers.payload.answers!
+  const session_difficulty = sessionAnswers.payload.difficulty!
+  const creation_date = sessionAnswers.payload.creation_date!
+  
   if (answers.answers.length != questions.length) {
     return {
       success: false,
@@ -41,7 +46,7 @@ export async function checkAnswers(answers: userSubmit, questions:acentualQuesti
     }
     const is_correct = (questions[i].acentual_answer === answer.answer) ? true : false
     if (is_correct) {
-      score += scores[questions[0].session_difficulty]
+      score += scores[session_difficulty]
       correct ++
 
     }
@@ -49,17 +54,17 @@ export async function checkAnswers(answers: userSubmit, questions:acentualQuesti
       game_id: questions[i].game_id,
       word_id: questions[i].word_id,
       word: questions[i].word,
-      acentual_phrase: questions[i].acentual_phrase,
+      phrase: questions[i].acentual_phrase,
       answer_value: questions[i].acentual_answer,
       answer: answerStrings[questions[i].acentual_answer],
       user_answer_value: answer.answer,
       user_answer: answerStrings[answer.answer],
-      options: allOptions[questions[i].session_difficulty][questions[i].option_schema_id],
+      options: allOptions[session_difficulty][questions[i].option_schema_id],
       is_correct: is_correct
     })
   }
 
-  const uploadAnswersQuery = await uploadAnswers(corrections, answers.session_id, answers.email, answers.password, score, questions[0].creation_date, db)
+  const uploadAnswersQuery = await uploadAnswers(corrections, answers.session_id, answers.email, answers.password, score, creation_date, db)
   if (!uploadAnswersQuery.success) {
     return {
       success: false,

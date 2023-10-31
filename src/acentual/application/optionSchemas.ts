@@ -1,4 +1,4 @@
-import { silabaOption } from "../../shared/types"
+import { answerOption } from "../../shared/types"
 const easyOptions = [
   [
     {value: 4, answer: "Aguda"},
@@ -149,7 +149,7 @@ function getRandomInt(max: number) {
 }
 
 
-export function selectSchema(correctAnswer: number, difficulty: number): {options: silabaOption[], schemaId: number} {
+export function selectSchema(correctAnswer: number, difficulty: number): {options: answerOption[], schemaId: number} {
 
   while (true) {
     const option = getRandomInt(allOptionsValues[difficulty].length - 1)

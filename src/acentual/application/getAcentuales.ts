@@ -1,8 +1,5 @@
 import type { Connection, ExecutedQuery } from "@planetscale/database";
-import { z } from "zod";
-import { uploadSilabasSchema } from "../../shared/schemas"
-import { validateAdmin } from "../../shared/validateAdmin"
-import { acentual, acentualPreGame } from "../../shared/types";
+import { acentual, acentualPreGame } from "./types";
 
 export async function getAcentuales(difficulty: number, amount: number, db: Connection) {
   let acentualQuery: ExecutedQuery

@@ -1,4 +1,4 @@
-import { acentualCorrection, silabaCorrection } from "../../shared/types";
+import { acentualCorrection } from "./types";
 import { Connection } from "@planetscale/database";
 import { getUserId } from "../../user/application/getUser";
 import { uploadScore } from "./uploadScore";

@@ -1,5 +1,4 @@
 import { Connection } from "@planetscale/database";
-import { getUserId } from "../../user/application/getUser";
 import { calculateTime } from "./calculateTime";
 
 export async function uploadScore(sessionId: string, userId: number, score: number, start_date: Date, db: Connection) {

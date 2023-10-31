@@ -1,38 +1,48 @@
 import { Connection } from "@planetscale/database"
-import { acentualQuestionResponse, silabaQuestionResponse } from "../../shared/types"
+import { acentualSessionAnswers, acentualGameResponse, completeAcentualGame } from "./types"
+import { getSession } from "./getSession"
+import { getCompleteAcentualGames } from "./addPhraseToGames";
 
-export async function getQuestions(session_id: string, db: Connection) {
-  const questionsQuery = await db.execute(`SELECT GameSession.difficulty session_difficulty,
-                                                  GameSession.creation_date creation_date,
-                                                  AcentualGame.id game_id,
-                                                  AcentualGame.option_schema_id,
-                                                  AcentualWord.id word_id,
-                                                  AcentualWord.word word,
-                                                  Acentual.phrase acentual_phrase,
-                                                  AcentualWord.answer acentual_answer,
-                                                  AcentualWord.word_pos word_pos
-                                                  FROM 
-                                                  (((GameSession INNER JOIN AcentualGame
-                                                    ON AcentualGame.session_id = GameSession.id)
-                                                    INNER JOIN 
-                                                    AcentualWord ON AcentualWord.id = AcentualGame.word_id) INNER JOIN Acentual ON Acentual.id = AcentualWord.acentual_id)  WHERE GameSession.id = "${session_id}" AND GameSession.is_answered = 0;`)
-  
-  console.log("poto")
-  if (questionsQuery.size == 0) {
+
+
+export async function getAcentualSessionAnswers(session_id: string, db: Connection): Promise<acentualSessionAnswers> {
+  const session = await getSession(session_id, db);
+  const sessionPayload = {
+    message: session.payload.message,
+    answers: null,
+    difficulty: null,
+    creation_date: null
+  }
+
+  if (!session.payload.session) {
     return {
       success: false,
-      payload: {
-        message: "The game session does not exist or has already been answered!",
-        questions: null
-      }
+      payload: sessionPayload
     }
   }
+
+  const games = await getCompleteAcentualGames(session_id, db);
+  const gamesPayload = {
+    message: games.payload.message,
+    answers: null,
+    difficulty: null,
+    creation_date: null
+  }
+  
+  if (!games.payload.acentualGames) {
+    return {
+      success: false,
+      payload: gamesPayload
+    }
+  }
+
   return {
     success: true,
     payload: {
       message: "Session's questions successfully retrieved",
-      questions: questionsQuery.rows as acentualQuestionResponse[]
+      answers: games.payload.acentualGames,
+      difficulty: session.payload.session.session_difficulty,
+      creation_date: session.payload.session?.creation_date
     }
   }
 }
-

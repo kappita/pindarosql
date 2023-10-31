@@ -1,7 +1,7 @@
 import type { Connection } from "@planetscale/database";
 
 import { createSession } from "../../shared/createSession"
-import { acentualQuestion } from "../../shared/types"
+import { acentualQuestion } from "./types"
 import { addAcentualesToSession } from "./addAcentualesToSession"
 import { getAcentuales } from "./getAcentuales"
 import { selectSchema } from "./optionSchemas"
