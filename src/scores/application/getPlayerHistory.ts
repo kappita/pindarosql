@@ -23,7 +23,7 @@ export async function getPlayerSessions(userId: number, db: Connection) {
                         game_id,
                         difficulty
                         FROM SessionScore
-                        WHERE game_id = ${userId}
+                        WHERE user_id = ${userId}
                         ORDER BY creation_date DESC`
 
   const sessions = (await db.execute(query)).rows as sessionScoreResponse[]

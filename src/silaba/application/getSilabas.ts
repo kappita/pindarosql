@@ -6,7 +6,7 @@ import { validateAdmin } from "../../shared/validateAdmin"
 export async function getSilabas(difficulty: number, amount: number, db: Connection) {
 
   const silabasQuery = await db.execute(`
-    SELECT * FROM Silaba WHERE difficulty <= ${difficulty} ORDER BY RAND() LIMIT ${amount};
+    SELECT * FROM Silaba WHERE difficulty <= ${difficulty} AND Silaba.is_active = 1 ORDER BY RAND() LIMIT ${amount};
   `);
 
   if (silabasQuery.size < amount) {

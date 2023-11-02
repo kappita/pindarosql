@@ -7,7 +7,7 @@ export async function getRimas(amount: number, db: Connection) {
   // const minimumCorrectAnswers = Math.floor(Math.random() * amount / 3);
 
   const rimasQuery = await db.execute(`
-    SELECT id, word, category, rhyme FROM Rima ORDER BY RAND() LIMIT ${amount * 2};`);
+    SELECT id, word, category, rhyme FROM Rima WHERE Rima.is_active = 1 ORDER BY RAND() LIMIT ${amount * 2};`);
 
   const rimas = rimasQuery.rows as rimaResponse[]
   const rimaSets = selectRimas(rimas, amount)

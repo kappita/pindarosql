@@ -3,6 +3,8 @@ import { startGame } from '../application/startGame';
 import { connect, Config } from "@planetscale/database";
 import { submitAnswers } from '../application/submitAnswers';
 import { addRimas } from '../application/addRimas';
+import { getRimas } from '../application/getRimas';
+import { getAllRimas } from '../application/getAllRimas';
 
 export function getDatabaseConfig(env: Bindings) {
   return {
@@ -51,6 +53,16 @@ rimas.post("/uploadRimas", async (c) => {
   return c.json({success: true, payload: upload.payload}, 200)
 })
 
+
+rimas.post("/allRimas", async (c) => {
+  const conn = connect(getDatabaseConfig(c.env))
+  const body = await c.req.json()
+  const rimas = await getAllRimas(body, conn)
+  if (!rimas.success) {
+    return c.json({success: false, payload: rimas.payload.message}, 400)
+  }
+  return c.json({success: true, payload: rimas.payload}, 200)
+})
 export default rimas
 
 

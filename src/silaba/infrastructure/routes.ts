@@ -3,6 +3,7 @@ import { startGame } from '../application/startGame';
 import { connect, Config } from "@planetscale/database";
 import { submitAnswers } from '../application/submitAnswers';
 import { addSilaba } from '../application/addSilaba';
+import { getAllSilabas } from '../application/getAllSilabas';
 
 export function getDatabaseConfig(env: Bindings) {
   return {
@@ -48,6 +49,17 @@ silabas.post("/uploadSilaba", async (c) => {
   }
   return c.json({success: true, payload: upload.payload}, 200)
 
+})
+
+
+silabas.post("/allSilabas", async (c) => {
+  const conn = connect(getDatabaseConfig(c.env))
+  const body = await c.req.json()
+  const silabas = await getAllSilabas(body, conn)
+  if (!silabas.success) {
+    return c.json({success: false, payload: silabas.payload.message}, 400)
+  }
+  return c.json({success: true, payload: silabas.payload}, 200)
 })
 
 export default silabas

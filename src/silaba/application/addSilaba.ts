@@ -1,5 +1,4 @@
 import type { Connection } from "@planetscale/database";
-import { z } from "zod";
 import { uploadSilabasSchema } from "../../shared/schemas"
 import { validateAdmin } from "../../shared/validateAdmin"
 
