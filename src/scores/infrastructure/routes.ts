@@ -1,6 +1,7 @@
 import { Hono } from 'hono';
 import { connect, Config } from "@planetscale/database";
 import { getLeaderboards } from '../application/getLeaderboard';
+import { getPlayerHistory } from '../application/getPlayerHistory';
 
 
 
@@ -21,6 +22,13 @@ const scores = new Hono<{ Bindings: Bindings }>()
 scores.get("/leaderboards", async (c) => {
   const conn = connect(getDatabaseConfig(c.env))
   const leaderboards = await getLeaderboards(conn)
+  return c.json({success: true, payload: leaderboards.payload}, 200)
+})
+
+scores.get("/history/:userId", async (c) => {
+  const conn = connect(getDatabaseConfig(c.env))
+  const userId = parseInt(c.req.param("userId"))
+  const leaderboards = await getPlayerHistory(userId, conn)
   return c.json({success: true, payload: leaderboards.payload}, 200)
 })
 
