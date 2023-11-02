@@ -49,7 +49,7 @@ function addWordsToGames(games: acentualGameResponse[], words: acentualWordRespo
   const gamesWithWords:acentualGameWithWord[] = []
 
   for (const game of games) {
-    const word = words.find(word => {return game.word_id = word.word_id})
+    const word = words.find(word => {return game.word_id == word.word_id})
     if (!word) {
       const payload = {
         message: "Error while trying to find the word of one of the games",
