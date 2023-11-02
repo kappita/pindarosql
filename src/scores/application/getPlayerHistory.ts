@@ -3,7 +3,7 @@ import { sessionScoreResponse } from "./types"
 
 
 
-export async function getPlayerGameHistory(gameId: number, userId: number, db: Connection) {
+export async function getPlayerHistory(userId: number, db: Connection) {
   const history = await getPlayerSessions(userId, db);
 
   return {
