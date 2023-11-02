@@ -1,10 +1,15 @@
 import { Connection } from "@planetscale/database";
 import { calculateTime } from "./calculateTime";
 
-export async function uploadScore(sessionId: string, userId: number, score: number, start_date: Date, db: Connection) {
+export async function uploadScore(sessionId: string,
+                                  userId: number,
+                                  score: number,
+                                  start_date: Date,
+                                  difficulty: number,
+                                  db: Connection) {
 
   const answerTime = await calculateTime(start_date, db)
-  const uploadQuery = await db.execute(`INSERT INTO SessionScore (session_id, score, user_id, answer_time) VALUES ("${sessionId}", ${score}, ${userId}, "${answerTime}")`)
+  const uploadQuery = await db.execute(`INSERT INTO SessionScore (session_id, score, user_id, answer_time, game_id, difficulty) VALUES ("${sessionId}", ${score}, ${userId}, "${answerTime}", 2, ${difficulty})`)
   if (uploadQuery.rowsAffected != 1) {
     return {
       success: false,

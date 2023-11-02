@@ -68,7 +68,7 @@ export async function checkAnswers(answers: userSubmit, sessionAnswers:rimaSessi
     })
   }
   console.log("upload query")
-  const uploadAnswersQuery = await uploadAnswers(corrections, answers.session_id, answers.email, answers.password, score, creation_date, db)
+  const uploadAnswersQuery = await uploadAnswers(corrections, answers.session_id, answers.email, answers.password, score, creation_date, session_difficulty, db)
   if (!uploadAnswersQuery.success) {
     return {
       success: false,

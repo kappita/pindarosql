@@ -64,7 +64,14 @@ export async function checkAnswers(answers: userSubmit, sessionAnswers:acentualS
     })
   }
 
-  const uploadAnswersQuery = await uploadAnswers(corrections, answers.session_id, answers.email, answers.password, score, creation_date, db)
+  const uploadAnswersQuery = await uploadAnswers(corrections,
+                                                 answers.session_id,
+                                                 answers.email,
+                                                 answers.password,
+                                                 score,
+                                                 creation_date,
+                                                 session_difficulty,
+                                                 db)
   if (!uploadAnswersQuery.success) {
     return {
       success: false,

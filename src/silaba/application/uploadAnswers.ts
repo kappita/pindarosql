@@ -5,10 +5,23 @@ import { uploadScore } from "./uploadScore";
 
 
 
-export async function uploadAnswers(corrections: silabaCorrection[], gameSession: string, userEmail: string | null, userPassword: string | null, score: number, start_date: Date, db: Connection) {
+export async function uploadAnswers(corrections: silabaCorrection[],
+                                    gameSession: string,
+                                    userEmail: string | null,
+                                    userPassword: string | null,
+                                    score: number,
+                                    start_date: Date,
+                                    difficulty: number,
+                                    db: Connection) {
   if (!userEmail || !userPassword) { 
     const uploadAnswersQuery = await db.execute(`INSERT INTO Answer (session_id, user_id, answer_value, game_type_id, game_id) VALUES ${corrections.map(e=> `("${gameSession}", 0, ${e.user_answer_value}, 1, ${e.game_id})`).join(",")}`)
-    const uploadScoreQuery = await uploadScore(gameSession, 0, score, start_date, db)
+    const uploadScoreQuery = await uploadScore(gameSession,
+                                               0,
+                                               score,
+                                               start_date,
+                                               difficulty,
+                                               db)
+
     if (!uploadScoreQuery.success) {
       return {
         success: false,
@@ -48,7 +61,12 @@ export async function uploadAnswers(corrections: silabaCorrection[], gameSession
     }
   }
 
-  const uploadScoreQuery = await uploadScore(gameSession, userData.payload.id, score, start_date,db)
+  const uploadScoreQuery = await uploadScore(gameSession,
+                                             userData.payload.id,
+                                             score,
+                                             start_date,
+                                             difficulty,
+                                             db)
   if (!uploadScoreQuery.success) {
     return {
       success: false,
