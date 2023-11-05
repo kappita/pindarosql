@@ -20,6 +20,7 @@ export type silabaQuestion = {
 }
 
 export type user = {
+  id: number,
   name: string,
   course: string,
   email: string,
