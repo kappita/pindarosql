@@ -7,6 +7,7 @@ const scores = [ 100, 125, 150, 200 ]
 const answerStrings = [ "Sin respuesta", "Una sílaba", "Dos sílabas", "Tres sílabas", "Cuatro sílabas", "Cinco sílabas", "Seis sílabas", "Siete sílabas", "Ocho sílabas"]
 
 export async function checkAnswers(answers: userSubmit, questions:silabaQuestionResponse[], db: Connection) {
+  const session_difficulty = questions[0].session_difficulty;
   if (answers.answers.length != questions.length) {
     return {
       success: false,
@@ -48,7 +49,7 @@ export async function checkAnswers(answers: userSubmit, questions:silabaQuestion
     corrections.push({
       game_id: questions[i].game_id,
       silaba_id: questions[i].silaba_id,
-      silaba_word: questions[i].word,
+      word: questions[i].word,
       answer: questions[i].silaba_answer,
       user_answer_value: answer.answer,
       user_answer: answerStrings[answer.answer],
@@ -57,7 +58,7 @@ export async function checkAnswers(answers: userSubmit, questions:silabaQuestion
     })
   }
 
-  const uploadAnswersQuery = await uploadAnswers(corrections, answers.session_id, answers.email, answers.password, score, questions[0].creation_date, db)
+  const uploadAnswersQuery = await uploadAnswers(corrections, answers.session_id, answers.email, answers.password, score, questions[0].creation_date, session_difficulty, db)
   if (!uploadAnswersQuery.success) {
     return {
       success: false,

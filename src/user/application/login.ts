@@ -18,7 +18,7 @@ export async function login(body: any, db: Connection) {
   }
   const data = bodyValidation.data
   console.log(`SELECT name, course, email, password FROM User WHERE email = "${data.email}" AND password = "${data.password}";`)
-  const userQuery = await db.execute(`SELECT name, course, email, password FROM User WHERE email = "${data.email}" AND password = "${data.password}";`)
+  const userQuery = await db.execute(`SELECT id, name, course, email, password FROM User WHERE email = "${data.email}" AND password = "${data.password}";`)
 
   if (userQuery.size == 0) {
     return {

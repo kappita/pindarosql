@@ -1,11 +1,11 @@
-import { silabaCorrection } from "../../shared/types";
+import { rimaCorrection } from "./types";
 import { Connection } from "@planetscale/database";
 import { getUserId } from "../../user/application/getUser";
 import { uploadScore } from "./uploadScore";
 
 
 
-export async function uploadAnswers(corrections: silabaCorrection[],
+export async function uploadAnswers(corrections: rimaCorrection[],
                                     gameSession: string,
                                     userEmail: string | null,
                                     userPassword: string | null,
@@ -14,14 +14,8 @@ export async function uploadAnswers(corrections: silabaCorrection[],
                                     difficulty: number,
                                     db: Connection) {
   if (!userEmail || !userPassword) { 
-    const uploadAnswersQuery = await db.execute(`INSERT INTO Answer (session_id, user_id, answer_value, game_type_id, game_id) VALUES ${corrections.map(e=> `("${gameSession}", 0, ${e.user_answer_value}, 1, ${e.game_id})`).join(",")}`)
-    const uploadScoreQuery = await uploadScore(gameSession,
-                                               0,
-                                               score,
-                                               start_date,
-                                               difficulty,
-                                               db)
-
+    const uploadAnswersQuery = await db.execute(`INSERT INTO Answer (session_id, user_id, answer_value, game_type_id, game_id) VALUES ${corrections.map(e=> `("${gameSession}", 0, ${e.user_answer_value}, 3, ${e.game_id})`).join(",")}`)
+    const uploadScoreQuery = await uploadScore(gameSession, 0, score, start_date, difficulty, db)
     if (!uploadScoreQuery.success) {
       return {
         success: false,
@@ -50,7 +44,7 @@ export async function uploadAnswers(corrections: silabaCorrection[],
       }
     }
   }
-  const uploadAnswersQuery = await db.execute(`INSERT INTO Answer (session_id, user_id, answer_value, game_type_id, game_id) VALUES ${corrections.map(e=> `("${gameSession}", ${userData.payload.id}, ${e.user_answer_value}, 1, ${e.game_id})`).join(",")}`)
+  const uploadAnswersQuery = await db.execute(`INSERT INTO Answer (session_id, user_id, answer_value, game_type_id, game_id) VALUES ${corrections.map(e=> `("${gameSession}", ${userData.payload.id}, ${e.user_answer_value}, 3, ${e.game_id})`).join(",")}`)
   if (uploadAnswersQuery.rowsAffected == 0) {
     return {
       success: false,
@@ -61,12 +55,7 @@ export async function uploadAnswers(corrections: silabaCorrection[],
     }
   }
 
-  const uploadScoreQuery = await uploadScore(gameSession,
-                                             userData.payload.id,
-                                             score,
-                                             start_date,
-                                             difficulty,
-                                             db)
+  const uploadScoreQuery = await uploadScore(gameSession, userData.payload.id, score, start_date, difficulty, db)
   if (!uploadScoreQuery.success) {
     return {
       success: false,

@@ -3,6 +3,7 @@ import { startGame } from '../application/startGame';
 import { connect, Config } from "@planetscale/database";
 import { submitAnswers } from '../application/submitAnswers';
 import { addAcentual } from '../application/addAcentual';
+import { cors } from 'hono/cors';
 
 export function getDatabaseConfig(env: Bindings) {
   return {
@@ -17,6 +18,8 @@ export function getDatabaseConfig(env: Bindings) {
 }
 
 const acentual = new Hono<{ Bindings: Bindings }>()
+
+acentual.use("*", cors())
 
 acentual.get("/poto", async (c) => {
   const conn = connect(getDatabaseConfig(c.env))

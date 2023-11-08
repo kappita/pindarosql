@@ -1,11 +1,12 @@
+
 import { Connection } from "@planetscale/database"
-import { acentualSessionAnswers, acentualGameResponse, completeAcentualGame } from "./types"
+import { rimaSessionAnswers } from "./types"
 import { getSession } from "./getSession"
-import { getCompleteAcentualGames } from "./addPhraseToGames";
+import { getCompleteRimaGames } from "./getCompleteRimaGames";
 
 
 
-export async function getAcentualSessionAnswers(session_id: string, db: Connection): Promise<acentualSessionAnswers> {
+export async function getRimaSessionAnswers(session_id: string, db: Connection): Promise<rimaSessionAnswers> {
   const session = await getSession(session_id, db);
   const sessionPayload = {
     message: session.payload.message,
@@ -21,7 +22,7 @@ export async function getAcentualSessionAnswers(session_id: string, db: Connecti
     }
   }
 
-  const games = await getCompleteAcentualGames(session_id, db);
+  const games = await getCompleteRimaGames(session_id, db);
   const gamesPayload = {
     message: games.payload.message,
     answers: null,
@@ -29,7 +30,7 @@ export async function getAcentualSessionAnswers(session_id: string, db: Connecti
     creation_date: null
   }
   
-  if (!games.payload.acentualGames) {
+  if (!games.payload.rimaGames) {
     return {
       success: false,
       payload: gamesPayload
@@ -40,7 +41,7 @@ export async function getAcentualSessionAnswers(session_id: string, db: Connecti
     success: true,
     payload: {
       message: "Session's questions successfully retrieved",
-      answers: games.payload.acentualGames,
+      answers: games.payload.rimaGames,
       difficulty: session.payload.session.session_difficulty,
       creation_date: session.payload.session?.creation_date
     }

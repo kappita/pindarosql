@@ -1,17 +1,17 @@
 import { Connection } from "@planetscale/database";
 import { userSubmit } from "../../shared/types";
-import { allOptions } from "./optionSchemas";
+import { getAnswer, selectSchema } from "./optionSchemas";
 import { uploadAnswers } from "./uploadAnswers";
-import { acentualSessionAnswers, acentualCorrection } from "./types";
+import { rimaCorrection, rimaSessionAnswers } from "./types";
 
 const scores = [ 100, 125, 150, 200 ]
-const answerStrings = [ "Sin respuesta", "Monosílabo átono", "Monosílabo tónico", "Bisílabo átono", "Aguda", "Grave", "Esdrújula", "Sobreesdrújula"]
 
-export async function checkAnswers(answers: userSubmit, sessionAnswers:acentualSessionAnswers, db: Connection) {
+
+export async function checkAnswers(answers: userSubmit, sessionAnswers:rimaSessionAnswers, db: Connection) {
   const questions = sessionAnswers.payload.answers!
   const session_difficulty = sessionAnswers.payload.difficulty!
   const creation_date = sessionAnswers.payload.creation_date!
-  
+  const answerStrings = selectSchema(session_difficulty).options
   if (answers.answers.length != questions.length) {
     return {
       success: false,
@@ -27,10 +27,10 @@ export async function checkAnswers(answers: userSubmit, sessionAnswers:acentualS
 
   let score = 0
   let correct = 0
-  let corrections: acentualCorrection[] = []
+  let corrections: rimaCorrection[] = []
 
   for(let i = 0; i < questions.length; i++) {
-    const answer = answers.answers.find(e => {return e.question_id === questions[i].word_id})
+    const answer = answers.answers.find(e => {return e.question_id === questions[i].game_id})
     if (!answer) {
       return {
         success: false,
@@ -44,34 +44,31 @@ export async function checkAnswers(answers: userSubmit, sessionAnswers:acentualS
         }
       }
     }
-    const is_correct = (questions[i].acentual_answer === answer.answer) ? true : false
+    const is_correct = (questions[i].rima_answer === answer.answer) ? true : false
     if (is_correct) {
       score += scores[session_difficulty]
       correct ++
 
     }
+
+
+
     corrections.push({
       game_id: questions[i].game_id,
-      word_id: questions[i].word_id,
-      word: questions[i].word,
-      phrase: questions[i].acentual_phrase,
-      answer_value: questions[i].acentual_answer,
-      answer: answerStrings[questions[i].acentual_answer],
+      word_a_id: questions[i].word_a_id,
+      word_b_id: questions[i].word_b_id,
+      word_a: questions[i].word_a,
+      word_b: questions[i].word_b,
+      answer_value: questions[i].rima_answer,
+      answer: getAnswer(session_difficulty, questions[i].rima_answer),
       user_answer_value: answer.answer,
-      user_answer: answerStrings[answer.answer],
-      options: allOptions[session_difficulty][questions[i].option_schema_id],
+      user_answer: getAnswer(session_difficulty, answer.answer),
+      options: answerStrings,
       is_correct: is_correct
     })
   }
-
-  const uploadAnswersQuery = await uploadAnswers(corrections,
-                                                 answers.session_id,
-                                                 answers.email,
-                                                 answers.password,
-                                                 score,
-                                                 creation_date,
-                                                 session_difficulty,
-                                                 db)
+  console.log("upload query")
+  const uploadAnswersQuery = await uploadAnswers(corrections, answers.session_id, answers.email, answers.password, score, creation_date, session_difficulty, db)
   if (!uploadAnswersQuery.success) {
     return {
       success: false,

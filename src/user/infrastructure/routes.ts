@@ -3,6 +3,7 @@ import { login } from '../application/login';
 import { connect, Config } from "@planetscale/database";
 import { addUser } from '../application/addUser';
 import { addAdmin } from '../application/addAdmin';
+import { cors } from 'hono/cors';
 
 export function getDatabaseConfig(env: Bindings) {
   return {
@@ -17,7 +18,7 @@ export function getDatabaseConfig(env: Bindings) {
 }
 
 const users = new Hono<{ Bindings: Bindings }>()
-
+users.use("*", cors())
 users.post("/login", async (c) => {
   const conn = connect(getDatabaseConfig(c.env))
   const body = await c.req.json()

@@ -52,3 +52,26 @@ export const uploadAcentualSchema = z.object({
   admin_password: z.string(),
   acentuales: z.array(acentualSchema)
 })
+
+
+export const rimaSchema = z.object({
+  word: z.string(),
+  category: z.string(),
+  rhyme: z.string()
+})
+export const uploadRimaSchema = z.object({
+  admin_email: z.string().email(),
+  admin_password: z.string(),
+  rimas: z.array(rimaSchema)
+})
+
+export const adminCredentialsSchema = z.object({
+  admin_email: z.string().email(),
+  admin_password: z.string()
+})
+
+export const deleteByIdSchema = z.object({
+  admin_email: z.string().email(),
+  admin_password: z.string(),
+  ids: z.array(z.number())
+})

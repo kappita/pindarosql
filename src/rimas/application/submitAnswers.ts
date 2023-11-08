@@ -1,6 +1,6 @@
 import type { Connection } from "@planetscale/database";
 import { sessionAnswers } from "../../shared/schemas"
-import { getAcentualSessionAnswers } from "./getQuestions";
+import { getRimaSessionAnswers } from "./getRimaSessionAnswers";
 import { checkAnswers } from "./checkAnswers";
 
 export async function submitAnswers(body: any, db: Connection) {
@@ -19,7 +19,7 @@ export async function submitAnswers(body: any, db: Connection) {
     };
   }
   const data = bodyValidation.data
-  const questions = await getAcentualSessionAnswers(data.session_id, db)
+  const questions = await getRimaSessionAnswers(data.session_id, db)
   if (!questions.success) {
     return {
       success: false,

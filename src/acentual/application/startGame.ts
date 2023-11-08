@@ -1,7 +1,7 @@
 import type { Connection } from "@planetscale/database";
 
 import { createSession } from "../../shared/createSession"
-import { acentualQuestion } from "../../shared/types"
+import { acentualQuestion } from "./types"
 import { addAcentualesToSession } from "./addAcentualesToSession"
 import { getAcentuales } from "./getAcentuales"
 import { selectSchema } from "./optionSchemas"
@@ -36,6 +36,7 @@ export async function startGame(difficulty: number, db: Connection) {
       }
     }
   }
+
 
   const game = await addAcentualesToSession(session.payload.session_id, acentualQuestions, db)
   
