@@ -1,4 +1,16 @@
 
+const easyAnswers = [
+  "Sin respuesta",
+  "No",
+  "Sí"
+]
+
+const mediumAnswers = [
+  "Sin respuesta",
+  "No hay rima",
+  "Rima consonante",
+  "Rima asonante"
+]
 
 const easyOptions = [
   {
@@ -31,11 +43,19 @@ const allOptions = [
   mediumOptions
 ]
 
-
+const allAnswers = [
+  easyAnswers,
+  mediumAnswers
+]
 export function getAnswer(difficulty: number, answer: number) {
-  answer = answer > 0 ? 1 : 0
+  if (difficulty == 0) {
+    answer = answer > 2 ? 2 : answer;
+  } else {
+    answer = answer > 3 ? 3 : answer;
+  }
+  
   difficulty = difficulty > 0 ? 1 : 0
-  return allOptions[difficulty][answer].answer
+  return allAnswers[difficulty][answer]
 } 
 
 export function selectSchema(difficulty: number) {

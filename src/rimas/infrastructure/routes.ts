@@ -5,6 +5,7 @@ import { submitAnswers } from '../application/submitAnswers';
 import { addRimas } from '../application/addRimas';
 import { getRimas } from '../application/getRimas';
 import { getAllRimas } from '../application/getAllRimas';
+import { cors } from 'hono/cors';
 
 export function getDatabaseConfig(env: Bindings) {
   return {
@@ -19,6 +20,7 @@ export function getDatabaseConfig(env: Bindings) {
 }
 
 const rimas = new Hono<{ Bindings: Bindings }>()
+rimas.use("*", cors())
 
 
 rimas.get("/start/:difficulty", async (c) => {

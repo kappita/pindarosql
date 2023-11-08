@@ -2,6 +2,7 @@ import { Hono } from 'hono';
 import { connect, Config } from "@planetscale/database";
 import { getLeaderboards } from '../application/getLeaderboard';
 import { getPlayerHistory } from '../application/getPlayerHistory';
+import { cors } from 'hono/cors';
 
 
 
@@ -18,6 +19,7 @@ export function getDatabaseConfig(env: Bindings) {
 }
 
 const scores = new Hono<{ Bindings: Bindings }>()
+scores.use("*", cors())
 
 scores.get("/leaderboards", async (c) => {
   const conn = connect(getDatabaseConfig(c.env))

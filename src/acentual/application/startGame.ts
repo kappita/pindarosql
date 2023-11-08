@@ -37,6 +37,7 @@ export async function startGame(difficulty: number, db: Connection) {
     }
   }
 
+
   const game = await addAcentualesToSession(session.payload.session_id, acentualQuestions, db)
   
   if (!game.success) {

@@ -46,25 +46,25 @@ const hardOptions = [
     {value: 4, answer: "Aguda"},
     {value: 5, answer: "Grave"},
     {value: 6, answer: "Esdrújula"},
-    {value: 7, answer: "Bisílabo átono"}
+    {value: 3, answer: "Bisílabo átono"}
   ],
   [
     {value: 4, answer: "Aguda"},
-    {value: 5, answer: "Grave"},
-    {value: 6, answer: "Monosílabo tónico"},
-    {value: 7, answer: "Bisílabo átono"}
+    {value: 1, answer: "Monosílabo átono"},
+    {value: 2, answer: "Monosílabo tónico"},
+    {value: 5, answer: "Grave"}
   ],
   [
     {value: 4, answer: "Aguda"},
-    {value: 5, answer: "Grave"},
-    {value: 6, answer: "Monosílabo atónico"},
-    {value: 7, answer: "Bisílabo átono"}
-  ],
-  [
-    {value: 4, answer: "Bisílabo átono"},
     {value: 5, answer: "Grave"},
     {value: 6, answer: "Esdrújula"},
-    {value: 7, answer: "Monosílabo tónico"}
+    {value: 2, answer: "Monosílabo tónico"}
+  ],
+  [
+    {value: 3, answer: "Bisílabo átono"},
+    {value: 5, answer: "Grave"},
+    {value: 6, answer: "Esdrújula"},
+    {value: 2, answer: "Monosílabo tónico"}
   ]
 ]
 
@@ -99,9 +99,6 @@ const mediumOptionsValues = [
     5,
     6,
     2
-  ],
-  [
-    4, 5, 6, 7
   ]
 ]
 
@@ -116,25 +113,25 @@ const hardOptionsValues = [
     4,
     5,
     6,
-    7
+    3
+  ],
+  [
+    4,
+    1,
+    2,
+    5
   ],
   [
     4,
     5,
     6,
-    7
+    2,
   ],
   [
-    4,
+    3,
     5,
     6,
-    7
-  ],
-  [
-    4,
-    5,
-    6,
-    7
+    2,
   ]
 ]
 
@@ -152,6 +149,7 @@ function getRandomInt(max: number) {
 export function selectSchema(correctAnswer: number, difficulty: number): {options: answerOption[], schemaId: number} {
 
   while (true) {
+    console.log(correctAnswer)
     const option = getRandomInt(allOptionsValues[difficulty].length - 1)
     if (allOptionsValues[difficulty][option].includes(correctAnswer)) {
       return {

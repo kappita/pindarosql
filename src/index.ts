@@ -18,7 +18,7 @@ app.get("/", async (c) => {
   return c.json({ success: false, payload: "Environment not found" });
 });
 
-app.use("/*", cors())
+app.use("*", cors())
 app.route("/silabas", silabas)
 app.route("/users", users)
 app.route("/acentual", acentual)
