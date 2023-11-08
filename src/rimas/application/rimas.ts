@@ -70,10 +70,10 @@ export function identificadorRima(palA: bloqueRima, palB: bloqueRima) {
 }
 
 function obtenerUltimaVocal(palabra: string) {
-  if (palabra[-1] in ['a', 'e', 'i', 'o', 'u']) {
-    return palabra[-1]
+  if (palabra[palabra.length - 1] in ['a', 'e', 'i', 'o', 'u']) {
+    return palabra[palabra.length - 1]
   }
-  return palabra[-2]
+  return palabra[palabra.length - 2]
 }
 
 function obtenerUltimasVocales(palabra: string) {
