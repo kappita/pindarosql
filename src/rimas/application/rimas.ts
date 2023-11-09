@@ -70,7 +70,7 @@ export function identificadorRima(palA: bloqueRima, palB: bloqueRima) {
 }
 
 function obtenerUltimaVocal(palabra: string) {
-  if (palabra[palabra.length - 1] in ['a', 'e', 'i', 'o', 'u']) {
+  if (['a', 'e', 'i', 'o', 'u'].includes(palabra[palabra.length - 1])) {
     return palabra[palabra.length - 1]
   }
   return palabra[palabra.length - 2]
@@ -85,7 +85,7 @@ function obtenerUltimasVocales(palabra: string) {
   }
   let firstFound = false
   for (let char of reverseString) {
-    for (let vocal of ['a', 'e', 'i', 'o', 'u']) {
+    if (['a', 'e', 'i', 'o', 'u'].includes(char)) {
       if (!firstFound) {
         vocalA = char
         firstFound = true
