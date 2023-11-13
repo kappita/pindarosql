@@ -24,12 +24,17 @@ export async function addRimas(body: any, db: Connection) {
       }
     }
   }
-
-  const rhymesValues = data.rimas.map(e=>{return `("${e.word}", "${e.category}", "${e.rhyme}")`})
+  console.log("Validado")
+  const rhymesValues = data.rimas.map(e=>{
+    const vowelsArray = Array.from(e.rhyme).filter(char => /[aeiouAEIOU]/.test(char));
+    const vowels = vowelsArray.join('');
+    return `("${e.word}", "${e.category}", "${e.rhyme}", "${vowels}")`
+  })
   const rhymesString = rhymesValues.join(",")
-  const query = `INSERT INTO Rima (word, category, rhyme) VALUES ${rhymesString};`
+  const query = `INSERT INTO Rima (word, category, rhyme, vowels) VALUES ${rhymesString};`
+  console.log(query);
   const uploadRhymeRequest = await db.execute(query)
-
+  console.log('Executed query')
   if (uploadRhymeRequest.rowsAffected != data.rimas.length) {
     return {
       success: false,

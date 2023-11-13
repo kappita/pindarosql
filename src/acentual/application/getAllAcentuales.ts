@@ -2,9 +2,9 @@ import { Connection } from "@planetscale/database";
 import { silaba } from "../../shared/types";
 import { validateAdmin } from "../../shared/validateAdmin";
 import { adminCredentialsSchema } from "../../shared/schemas";
-import { rimaResponse } from "./types";
+import { acentualResponse } from "./types";
 
-export async function getAllRimas(body: any, db: Connection) {
+export async function getAllAcentuales(body: any, db: Connection) {
 
   const bodyValidation = adminCredentialsSchema.safeParse(body);
 
@@ -27,17 +27,17 @@ export async function getAllRimas(body: any, db: Connection) {
     }
   }
 
-  const rimasQuery = await db.execute(`
-    SELECT id, word, category, rhyme FROM Rima ORDER BY id;`);
+  const acentualQuery = await db.execute(`
+    SELECT id acentual_id, phrase acentual_phrase FROM Acentual ORDER BY id;`);
 
-  const rimas = rimasQuery.rows as rimaResponse[]
+  const acentuales = acentualQuery.rows as acentualResponse[]
 
 
   return {
     success: true,
     payload: {
       message: "Questions retreived successfully",
-      silabas: rimas
+      silabas: acentuales
     }
   };
 }

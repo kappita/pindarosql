@@ -27,7 +27,7 @@ export async function getAllSilabas(body: any, db: Connection) {
   }
 
   const silabasQuery = await db.execute(`
-    SELECT * FROM Silaba WHERE Silaba.is_active = 1 ORDER BY id;
+    SELECT * FROM Silaba ORDER BY id;
   `);
 
 

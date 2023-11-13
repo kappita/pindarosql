@@ -6,6 +6,7 @@ import { addRimas } from '../application/addRimas';
 import { getRimas } from '../application/getRimas';
 import { getAllRimas } from '../application/getAllRimas';
 import { cors } from 'hono/cors';
+import { deleteRimas } from '../application/deleteRimas';
 
 export function getDatabaseConfig(env: Bindings) {
   return {
@@ -65,6 +66,18 @@ rimas.post("/allRimas", async (c) => {
   }
   return c.json({success: true, payload: rimas.payload}, 200)
 })
+
+rimas.post("/deleteRimas", async (c) => {
+  const conn = connect(getDatabaseConfig(c.env))
+  const body = await c.req.json()
+  const rimas = await deleteRimas(body, conn)
+  if (!rimas.success) {
+    return c.json({success: false, payload: rimas.payload.message}, 400)
+  }
+  return c.json({success: true, payload: rimas.payload}, 200)
+})
+
+
 export default rimas
 
 

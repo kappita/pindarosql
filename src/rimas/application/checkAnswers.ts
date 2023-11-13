@@ -44,7 +44,11 @@ export async function checkAnswers(answers: userSubmit, sessionAnswers:rimaSessi
         }
       }
     }
-    const is_correct = (questions[i].rima_answer === answer.answer) ? true : false
+    let correctAnswer = questions[i].rima_answer
+    if (session_difficulty === 0) {
+      correctAnswer = correctAnswer > 2 ? 2 : correctAnswer;
+    }
+    const is_correct = (correctAnswer === answer.answer) ? true : false
     if (is_correct) {
       score += scores[session_difficulty]
       correct ++

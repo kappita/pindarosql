@@ -4,7 +4,8 @@ export type rimaResponse = {
   id: number,
   word: string,
   category: string,
-  rhyme: string
+  rhyme: string,
+  vowels: string
 }
 
 export type rimaSet = {

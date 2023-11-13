@@ -1,12 +1,11 @@
 import { Connection } from "@planetscale/database";
 import { silaba } from "../../shared/types";
 import { validateAdmin } from "../../shared/validateAdmin";
-import { adminCredentialsSchema } from "../../shared/schemas";
-import { rimaResponse } from "./types";
+import { adminCredentialsSchema, deleteByIdSchema } from "../../shared/schemas";
 
-export async function getAllRimas(body: any, db: Connection) {
+export async function deleteSilabas(body: any, db: Connection) {
 
-  const bodyValidation = adminCredentialsSchema.safeParse(body);
+  const bodyValidation = deleteByIdSchema.safeParse(body);
 
   if (!bodyValidation.success) {
     return {
@@ -27,17 +26,13 @@ export async function getAllRimas(body: any, db: Connection) {
     }
   }
 
-  const rimasQuery = await db.execute(`
-    SELECT id, word, category, rhyme FROM Rima ORDER BY id;`);
-
-  const rimas = rimasQuery.rows as rimaResponse[]
-
+  const idsString = data.ids.map(e=>{return `Silaba.id = ${e}`}).join(" OR ")
+  await db.execute(`UPDATE Silaba SET Silaba.is_active = 1 WHERE ${idsString};`)
 
   return {
     success: true,
     payload: {
-      message: "Questions retreived successfully",
-      silabas: rimas
+      message: "Given silabas activated successfully"
     }
   };
 }

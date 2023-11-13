@@ -4,6 +4,8 @@ import { connect, Config } from "@planetscale/database";
 import { submitAnswers } from '../application/submitAnswers';
 import { addAcentual } from '../application/addAcentual';
 import { cors } from 'hono/cors';
+import { getAllAcentuales } from '../application/getAllAcentuales';
+import { deleteAcentuales } from '../application/deleteAcentuales';
 
 export function getDatabaseConfig(env: Bindings) {
   return {
@@ -58,6 +60,26 @@ acentual.post("/uploadAcentual", async (c) => {
     return c.json({success: false, payload: upload.payload.message}, 400)
   }
   return c.json({success: true, payload: upload.payload}, 200)
+})
+
+acentual.post("/allAcentuales", async (c) => {
+  const conn = connect(getDatabaseConfig(c.env))
+  const body = await c.req.json()
+  const acentuales = await getAllAcentuales(body, conn)
+  if (!acentuales.success) {
+    return c.json({success: false, payload: acentuales.payload.message}, 400)
+  }
+  return c.json({success: true, payload: acentuales.payload}, 200)
+})
+
+acentual.post("/deleteAcentuales", async (c) => {
+  const conn = connect(getDatabaseConfig(c.env))
+  const body = await c.req.json()
+  const acentuales = await deleteAcentuales(body, conn)
+  if (!acentuales.success) {
+    return c.json({success: false, payload: acentuales.payload.message}, 400)
+  }
+  return c.json({success: true, payload: acentuales.payload}, 200)
 })
 
 export default acentual

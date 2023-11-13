@@ -4,6 +4,7 @@ import { connect, Config } from "@planetscale/database";
 import { submitAnswers } from '../application/submitAnswers';
 import { addSilaba } from '../application/addSilaba';
 import { getAllSilabas } from '../application/getAllSilabas';
+import { deleteSilabas } from '../application/deleteSilabas';
 
 export function getDatabaseConfig(env: Bindings) {
   return {
@@ -56,6 +57,16 @@ silabas.post("/allSilabas", async (c) => {
   const conn = connect(getDatabaseConfig(c.env))
   const body = await c.req.json()
   const silabas = await getAllSilabas(body, conn)
+  if (!silabas.success) {
+    return c.json({success: false, payload: silabas.payload.message}, 400)
+  }
+  return c.json({success: true, payload: silabas.payload}, 200)
+})
+
+silabas.post("/deleteSilabas", async (c) => {
+  const conn = connect(getDatabaseConfig(c.env))
+  const body = await c.req.json()
+  const silabas = await deleteSilabas(body, conn)
   if (!silabas.success) {
     return c.json({success: false, payload: silabas.payload.message}, 400)
   }

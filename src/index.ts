@@ -18,6 +18,20 @@ app.get("/", async (c) => {
   return c.json({ success: false, payload: "Environment not found" });
 });
 
+app.get("/test", async (c) => {
+  let result = 0;
+  for (let i = 0; i < 500000; i++) {
+    result += Math.random();
+  }
+  for (let i = 0; i < 500000; i++) {
+    result += Math.random();
+  }
+  for (let i = 0; i < 500000; i++) {
+    result += Math.random();
+  }
+  return c.text(`${result}`)
+})
+
 app.use("*", cors())
 app.route("/silabas", silabas)
 app.route("/users", users)

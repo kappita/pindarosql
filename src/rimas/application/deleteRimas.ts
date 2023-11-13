@@ -27,7 +27,7 @@ export async function deleteRimas(body: any, db: Connection) {
 
 
 
-  const idsString = data.ids.map(e=>{return `Silaba.id = ${e}`}).join(" OR ")
+  const idsString = data.ids.map(e=>{return `Rima.id = ${e}`}).join(" OR ")
   await db.execute(`UPDATE Rima SET Rima.is_active = 0 WHERE ${idsString}`)
 
   return {
