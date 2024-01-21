@@ -2,11 +2,10 @@ import type { Connection } from "@planetscale/database";
 import { z } from "zod";
 import { uploadSilabasSchema } from "../../shared/schemas"
 import { validateAdmin } from "../../shared/validateAdmin"
-import { silaba, silabaQuestion } from "../../shared/types"
+import { Optional, silaba, silabaQuestion } from "../../shared/types"
 import { selectSchema } from "./optionSchemas"
 
-export async function addSilabasToSession(sessionId: string, questions: silabaQuestion[], db: Connection) {
-
+export async function addSilabasToSession(sessionId: string, questions: silabaQuestion[], db: Connection): Promise<Optional<boolean>> {
 
   const uploadQuery = await db.execute(`
     INSERT INTO SilabaGame (session_id, silaba_id, option_schema_id)
@@ -15,17 +14,13 @@ export async function addSilabasToSession(sessionId: string, questions: silabaQu
 
   if (uploadQuery.rowsAffected != questions.length) {
     return {
-      success: false,
-      payload: {
-        message: "Session games linked unsuccessfully!"
-      }
+      message: "Session games linked unsuccessfully!",
+      content: false
     }
   }
   return {
-    success: true,
-    payload: {
-      message: "Session games linked successfully!"
-    }
+    message: "Session games linked successfully!",
+    content: true
     
   };
 }

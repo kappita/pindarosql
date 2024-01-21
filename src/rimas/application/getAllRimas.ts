@@ -1,42 +1,42 @@
 import { Connection } from "@planetscale/database";
 import { silaba } from "../../shared/types";
 import { validateAdmin } from "../../shared/validateAdmin";
-import { adminCredentialsSchema } from "../../shared/schemas";
+import { loginWithTokenSchema } from "../../shared/schemas";
 import { rimaResponse } from "./types";
 
-export async function getAllRimas(body: any, db: Connection) {
+export async function getAllRimas(body: any, env: Bindings, db: Connection) {
 
-  const bodyValidation = adminCredentialsSchema.safeParse(body);
+  const bodyValidation = loginWithTokenSchema.safeParse(body);
 
   if (!bodyValidation.success) {
     return {
       success: false,
+      message: bodyValidation.error.toString(),
       payload: {
-        message: bodyValidation.error
       }
     };
   }
   const data = bodyValidation.data
 
-  if (!(await validateAdmin(data.admin_email, data.admin_password, db)).success) {
+  if (!(await validateAdmin(data.token, env))) {
     return {
       success: false,
+      message: "You have no authorization to do this!",
       payload: {
-        message: "You have no authorization to do this!"
       }
     }
   }
 
   const rimasQuery = await db.execute(`
-    SELECT id, word, category, rhyme FROM Rima ORDER BY id;`);
+    SELECT id, word, category, rhyme, is_active FROM Rima ORDER BY id;`);
 
   const rimas = rimasQuery.rows as rimaResponse[]
 
 
   return {
     success: true,
+    message: "Questions retreived successfully",
     payload: {
-      message: "Questions retreived successfully",
       silabas: rimas
     }
   };

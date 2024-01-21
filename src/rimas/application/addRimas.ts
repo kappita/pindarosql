@@ -3,20 +3,20 @@ import { z } from "zod";
 import { uploadRimaSchema } from "../../shared/schemas"
 import { validateAdmin } from "../../shared/validateAdmin"
 
-export async function addRimas(body: any, db: Connection) {
+export async function addRimas(body: any, env: Bindings, db: Connection) {
   const bodyValidation = uploadRimaSchema.safeParse(body);
 
   if (!bodyValidation.success) {
     return {
       success: false,
       payload: {
-        message: bodyValidation.error
+        message: bodyValidation.error.toString()
       }
     };
   }
   const data = bodyValidation.data
 
-  if (!(await validateAdmin(data.admin_email, data.admin_password, db)).success) {
+  if (!(await validateAdmin(data.token, env))) {
     return {
       success: false,
       payload: {

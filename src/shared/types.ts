@@ -3,6 +3,7 @@ export type silaba = {
   word: string,
   answer: number,
   difficulty: number,
+  is_active: boolean,
   creation_date: Date,
   modification_date: Date
 }
@@ -24,7 +25,8 @@ export type user = {
   name: string,
   course: string,
   email: string,
-  password: string
+  password: string,
+  is_admin: boolean
 }
 
 export type userAnswers = {
@@ -54,8 +56,19 @@ export type silabaCorrection = {
 
 export type userSubmit = {
   session_id: string
-  email: string | null
-  password: string | null
+  token: string | null,
   answers: userAnswers[]
 }
 
+export type Optional<T> = {
+  content: T | null,
+  message: string
+}
+
+export type GameCorrections<T> = {
+  corrections: T[],
+  score: number,
+  correct: number,
+  total: number,
+  time: string
+}

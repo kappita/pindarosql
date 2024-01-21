@@ -1,19 +1,20 @@
-import { silabaCorrection } from "../../shared/types";
+import { Optional, silabaCorrection } from "../../shared/types";
 import { Connection } from "@planetscale/database";
 import { getUserId } from "../../user/application/getUser";
 import { uploadScore } from "./uploadScore";
+import { authenticateJWT } from "../../shared/authenticateJWT";
 
 
 
 export async function uploadAnswers(corrections: silabaCorrection[],
                                     gameSession: string,
-                                    userEmail: string | null,
-                                    userPassword: string | null,
+                                    token: string | null,
                                     score: number,
                                     start_date: Date,
                                     difficulty: number,
-                                    db: Connection) {
-  if (!userEmail || !userPassword) { 
+                                    env: Bindings,
+                                    db: Connection): Promise<Optional<string>> {
+  if (!token) { 
     const uploadAnswersQuery = await db.execute(`INSERT INTO Answer (session_id, user_id, answer_value, game_type_id, game_id) VALUES ${corrections.map(e=> `("${gameSession}", 0, ${e.user_answer_value}, 1, ${e.game_id})`).join(",")}`)
     const uploadScoreQuery = await uploadScore(gameSession,
                                                0,
@@ -22,65 +23,47 @@ export async function uploadAnswers(corrections: silabaCorrection[],
                                                difficulty,
                                                db)
 
-    if (!uploadScoreQuery.success) {
+    if (!uploadScoreQuery.content) {
       return {
-        success: false,
-        payload: {
-          message: uploadScoreQuery.payload.message,
-          time: null
-        }
+        content: null,
+        message: uploadScoreQuery.message
       }
     }
     return {
-      success: true,
-      payload: {
-        message: "Answers stored as anonymous/guest",
-        time: uploadScoreQuery.payload.time
-      }
+      content: uploadScoreQuery.content,
+      message: "Answers stored as anonymous/guest"
       
     }
   }
-  const userData = await getUserId(userEmail, userPassword, db)
-  if (!userData.success || !userData.payload.id) {
+  const userData = await authenticateJWT(token, env)
+  if (!userData.content) {
     return {
-      success: false,
-      payload: {
-        message: userData.payload.message,
-        time: null
-      }
+      content: null,
+      message: userData.message
     }
   }
-  const uploadAnswersQuery = await db.execute(`INSERT INTO Answer (session_id, user_id, answer_value, game_type_id, game_id) VALUES ${corrections.map(e=> `("${gameSession}", ${userData.payload.id}, ${e.user_answer_value}, 1, ${e.game_id})`).join(",")}`)
+const uploadAnswersQuery = await db.execute(`INSERT INTO Answer (session_id, user_id, answer_value, game_type_id, game_id) VALUES ${corrections.map(e=> `("${gameSession}", ${userData.content!.user_id}, ${e.user_answer_value}, 1, ${e.game_id})`).join(",")}`)
   if (uploadAnswersQuery.rowsAffected == 0) {
     return {
-      success: false,
-      payload: {
-        message: "Couldn't store answers",
-        time: null
-      }
+      message: "Couldn't store answers",
+      content: null
     }
   }
 
   const uploadScoreQuery = await uploadScore(gameSession,
-                                             userData.payload.id,
+                                             userData.content!.user_id,
                                              score,
                                              start_date,
                                              difficulty,
                                              db)
-  if (!uploadScoreQuery.success) {
+  if (!uploadScoreQuery.content) {
     return {
-      success: false,
-      payload: {
-        message: "Couldn't store score",
-        time: null
-      }
+      content: null,
+      message: "Couldn't store score"
     }
   }
   return {
-    success: true,
-    payload: {
-      message: "Answers stored successfully by user",
-      time: uploadScoreQuery.payload.time!
-    }
+    message: "Answers stored successfully by user",
+    content: uploadScoreQuery.content
   }
 }

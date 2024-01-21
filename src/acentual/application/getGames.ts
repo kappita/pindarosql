@@ -1,10 +1,11 @@
 import { Connection } from "@planetscale/database";
 import { acentualGames, acentualGameResponse } from "./types";
+import { Optional } from "../../shared/types";
 
 
 
 
-export async function getAcentualGames(session_id: string, db: Connection): Promise<acentualGames>{
+export async function getAcentualGames(session_id: string, db: Connection): Promise<Optional<acentualGameResponse[]>>{
 
 
   const gameQuery = await db.execute(`SELECT AcentualGame.id game_id,
@@ -15,18 +16,12 @@ export async function getAcentualGames(session_id: string, db: Connection): Prom
 
   if (gameQuery.size == 0) {
     return {
-      success: false,
-      payload: {
-        message: "No games found with such session id!",
-        acentualGames: null
-      }
+      message: "No games found with such session id!",
+      content: null,
     }
   }
   return {
-    success: true,
-    payload: {
-      message: "Games retrieved successfully",
-      acentualGames: gameQuery.rows as acentualGameResponse[]
-    }
+    message: "Games retrieved successfully",
+    content: gameQuery.rows as acentualGameResponse[]
   }
 }

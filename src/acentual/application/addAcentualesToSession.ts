@@ -1,8 +1,9 @@
 import type { Connection } from "@planetscale/database";
 
 import { acentualQuestion } from "./types"
+import { Optional } from "../../shared/types";
 
-export async function addAcentualesToSession(sessionId: string, questions: acentualQuestion[], db: Connection) {
+export async function addAcentualesToSession(sessionId: string, questions: acentualQuestion[], db: Connection): Promise<Optional<Boolean>> {
 
 
   const uploadQuery = await db.execute(`
@@ -12,17 +13,15 @@ export async function addAcentualesToSession(sessionId: string, questions: acent
 
   if (uploadQuery.rowsAffected != questions.length) {
     return {
-      success: false,
-      payload: {
-        message: "Session games linked unsuccessfully!"
-      }
+      content: false,
+      message: "Session games linked unsuccessfully!"
+
     }
   }
   return {
-    success: true,
-    payload: {
-      message: "Session games linked successfully!"
-    }
+    content: true,
+    message: "Session games linked successfully!"
+
     
   };
 }

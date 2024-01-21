@@ -3,14 +3,15 @@ import { v4 } from 'uuid'
 import { userExists } from "./userExists"
 
 import { addUserSchema } from "../../shared/schemas"
-export async function addUser(body: any, db: Connection) {
+import { encryptPassword } from "../../shared/encryptPassword";
+export async function addUser(body: any, env: Bindings, db: Connection) {
   const bodyValidation = addUserSchema.safeParse(body)
 
   if (!bodyValidation.success) {
     return {
       success: false,
+      message: bodyValidation.error,
       payload: {
-        message: bodyValidation.error
       },
     };
   }
@@ -19,27 +20,30 @@ export async function addUser(body: any, db: Connection) {
   if ((await userExists(data.email, db)).payload.response) {
     return {
       success: false,
+      message: "User already exists in database!",
       payload: {
-        message: "User already exists in database!"
       }
     }
   }
 
+
+  const encryptedPassword = encryptPassword(data.password, env)
+  console.log(encryptedPassword)
   const userQuery = await db.execute(`INSERT INTO User (name, course, email, password)
-                                      VALUES ("${data.name}", "${data.course}", "${data.email}", "${data.password}")`)
+                                      VALUES ("${data.name}", "${data.course}", "${data.email}", "${encryptedPassword}")`)
 
   if (userQuery.rowsAffected != 1) {
     return {
       success: false,
+      message: "Error adding user to database",
       payload: {
-        message: "Error adding user to database"
       }
     }
   }
   return {
     success: true,
+    message: "User added successfully!",
     payload: {
-      message: "User added successfully!"
     }
   }
 }

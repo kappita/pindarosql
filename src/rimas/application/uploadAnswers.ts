@@ -2,74 +2,61 @@ import { rimaCorrection } from "./types";
 import { Connection } from "@planetscale/database";
 import { getUserId } from "../../user/application/getUser";
 import { uploadScore } from "./uploadScore";
+import jwt from "@tsndr/cloudflare-worker-jwt"
+import { Optional } from "../../shared/types";
 
 
 
 export async function uploadAnswers(corrections: rimaCorrection[],
                                     gameSession: string,
-                                    userEmail: string | null,
-                                    userPassword: string | null,
+                                    token: string | null,
                                     score: number,
                                     start_date: Date,
                                     difficulty: number,
-                                    db: Connection) {
-  if (!userEmail || !userPassword) { 
+                                    env: Bindings,
+                                    db: Connection): Promise<Optional<string>> {
+  if (!token) { 
     const uploadAnswersQuery = await db.execute(`INSERT INTO Answer (session_id, user_id, answer_value, game_type_id, game_id) VALUES ${corrections.map(e=> `("${gameSession}", 0, ${e.user_answer_value}, 3, ${e.game_id})`).join(",")}`)
     const uploadScoreQuery = await uploadScore(gameSession, 0, score, start_date, difficulty, db)
-    if (!uploadScoreQuery.success) {
+    if (!uploadScoreQuery.content) {
       return {
-        success: false,
-        payload: {
-          message: uploadScoreQuery.payload.message,
-          time: null
-        }
+        message: uploadScoreQuery.message,
+        content: null
       }
     }
     return {
-      success: true,
-      payload: {
-        message: "Answers stored as anonymous/guest",
-        time: uploadScoreQuery.payload.time
-      }
+      message: "Answers stored as anonymous/guest",
+      content: uploadScoreQuery.content! 
       
     }
   }
-  const userData = await getUserId(userEmail, userPassword, db)
-  if (!userData.success || !userData.payload.id) {
+  const isValid = await jwt.verify(token, env.JWT_KEY)
+
+  if (!isValid) {
     return {
-      success: false,
-      payload: {
-        message: userData.payload.message,
-        time: null
-      }
-    }
-  }
-  const uploadAnswersQuery = await db.execute(`INSERT INTO Answer (session_id, user_id, answer_value, game_type_id, game_id) VALUES ${corrections.map(e=> `("${gameSession}", ${userData.payload.id}, ${e.user_answer_value}, 3, ${e.game_id})`).join(",")}`)
-  if (uploadAnswersQuery.rowsAffected == 0) {
-    return {
-      success: false,
-      payload: {
-        message: "Couldn't store answers",
-        time: null
-      }
+      message: "JWT received is not valid",
+      content: null
     }
   }
 
-  const uploadScoreQuery = await uploadScore(gameSession, userData.payload.id, score, start_date, difficulty, db)
-  if (!uploadScoreQuery.success) {
+  const { payload } = jwt.decode(token)
+  const uploadAnswersQuery = await db.execute(`INSERT INTO Answer (session_id, user_id, answer_value, game_type_id, game_id) VALUES ${corrections.map(e=> `("${gameSession}", ${payload!["user_id"]}, ${e.user_answer_value}, 3, ${e.game_id})`).join(",")}`)
+  if (uploadAnswersQuery.rowsAffected == 0) {
     return {
-      success: false,
-      payload: {
-        message: "Couldn't store score",
-        time: null
-      }
+      message: "Couldn't store answers",
+      content: null
+    }
+  }
+
+  const uploadScoreQuery = await uploadScore(gameSession, payload!["user_id"], score, start_date, difficulty, db)
+  if (!uploadScoreQuery.content) {
+    return {
+      message: "Couldn't store score",
+      content: null
     }
   }
   return {
-    success: true,
-    payload: {
-      message: "Answers stored successfully by user",
-      time: uploadScoreQuery.payload.time!
-    }
+    message: "Answers stored successfully by user",
+    content: uploadScoreQuery.content!
   }
 }

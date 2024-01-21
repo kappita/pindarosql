@@ -2,24 +2,21 @@ import { Connection } from "@planetscale/database";
 import { acentualGamesWithWords} from "./types"
 import { getAcentualGames } from "./getGames";
 import { acentualGames, acentualGameResponse, acentualWordResponse, acentualGameWithWord } from "./types";
+import { Optional } from "../../shared/types";
 
 
 
 
-export async function getAcentualGamesWithWords(session_id: string, db: Connection): Promise<acentualGamesWithWords> {
+export async function getAcentualGamesWithWords(session_id: string, db: Connection): Promise<Optional<acentualGameWithWord[]>> {
   const acentualGamesRequest = await getAcentualGames(session_id, db);
-  if (!acentualGamesRequest.payload.acentualGames) {
-    const payload = {
-      message: acentualGamesRequest.payload.message,
-      acentualGames: null
-    }
+  if (!acentualGamesRequest.content) {
     return {
-      success: false,
-      payload: payload
+      message: acentualGamesRequest.message,
+      content: null,
     }
   }
 
-  const games = acentualGamesRequest.payload.acentualGames
+  const games = acentualGamesRequest.content
   const wordIds = games.map(game => {return game.word_id})
   const query = `SELECT AcentualWord.id word_id,
                         AcentualWord.acentual_id acentual_id,
@@ -32,11 +29,8 @@ export async function getAcentualGamesWithWords(session_id: string, db: Connecti
 
   if (wordsQuery.size == 0) {
     return {
-      success: false,
-      payload: {
-        message: "No words found for given games!",
-        acentualGames: null
-      }
+      message: "No words found for given games!",
+      content: null
     }
   }
 
@@ -45,20 +39,15 @@ export async function getAcentualGamesWithWords(session_id: string, db: Connecti
   
 }
 
-function addWordsToGames(games: acentualGameResponse[], words: acentualWordResponse[]): acentualGamesWithWords {
+function addWordsToGames(games: acentualGameResponse[], words: acentualWordResponse[]): Optional<acentualGameWithWord[]> {
   const gamesWithWords:acentualGameWithWord[] = []
 
   for (const game of games) {
     const word = words.find(word => {return game.word_id == word.word_id})
     if (!word) {
-      const payload = {
-        message: "Error while trying to find the word of one of the games",
-        acentualGames: null
-      }
-
       return {
-        success: false,
-        payload: payload
+        message: "Error while trying to find the word of one of the games",
+        content: null
       }
     }
     
@@ -68,11 +57,8 @@ function addWordsToGames(games: acentualGameResponse[], words: acentualWordRespo
     })
   }
   return {
-    success: true,
-    payload: {
-      message: "Games retrieved successfully",
-      acentualGames: gamesWithWords
-    }
+    message: "Games retrieved successfully",
+    content: gamesWithWords,
   }
 
 }

@@ -5,7 +5,8 @@ export type rimaResponse = {
   word: string,
   category: string,
   rhyme: string,
-  vowels: string
+  vowels: string,
+  is_active: boolean
 }
 
 export type rimaSet = {
@@ -98,4 +99,10 @@ export type rimaSetWithGame = {
   rhyme_a: rimaResponse,
   rhyme_b: rimaResponse,
   game_id: number
+}
+
+export type SessionAnswers = {
+  answers: completeRimaGame[],
+  difficulty: number,
+  creation_date: Date
 }

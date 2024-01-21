@@ -7,8 +7,7 @@ export const silabaSchema = z.object({
 })
 
 export const uploadSilabasSchema = z.object({
-  admin_email: z.string().email(),
-  admin_password: z.string(),
+  token: z.string(),
   silabas: z.array(silabaSchema)
 })
 
@@ -38,8 +37,7 @@ const questionAnswer = z.object({
 
 export const sessionAnswers = z.object({
   session_id: z.string(),
-  email: z.string().email().nullable(),
-  password: z.string().nullable(),
+  token: z.string().nullable(),
   answers: z.array(questionAnswer)
 })
 
@@ -48,20 +46,18 @@ export const acentualSchema = z.object({
 })
 
 export const uploadAcentualSchema = z.object({
-  admin_email: z.string().email(),
-  admin_password: z.string(),
+  token: z.string(),
   acentuales: z.array(acentualSchema)
 })
-
 
 export const rimaSchema = z.object({
   word: z.string(),
   category: z.string(),
   rhyme: z.string()
 })
+
 export const uploadRimaSchema = z.object({
-  admin_email: z.string().email(),
-  admin_password: z.string(),
+  token: z.string(),
   rimas: z.array(rimaSchema)
 })
 
@@ -71,7 +67,10 @@ export const adminCredentialsSchema = z.object({
 })
 
 export const deleteByIdSchema = z.object({
-  admin_email: z.string().email(),
-  admin_password: z.string(),
+  token: z.string(),
   ids: z.array(z.number())
+})
+
+export const loginWithTokenSchema = z.object({
+  token: z.string()
 })

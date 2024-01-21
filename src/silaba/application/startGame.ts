@@ -10,17 +10,15 @@ import { selectSchema } from "./optionSchemas"
 
 export async function startGame(difficulty: number, db: Connection) {
   let rows = await getSilabas(difficulty, 10, db)
-  if (!rows.success || !rows.payload.silabas) {
+  if (!rows.content) {
     return {
       success: false,
-      payload: {
-        message: rows.payload.message,
-        game: null
-      }
+      message: rows.message,
+      payload: null
     }
   }
 
-  const silabas = rows.payload.silabas as silaba[]
+  const silabas = rows.content as silaba[]
   const silabaQuestions: silabaQuestion[] = silabas.map(e => {
     const schema = selectSchema(e.answer)
     return {
@@ -41,11 +39,11 @@ export async function startGame(difficulty: number, db: Connection) {
 
   const game = await addSilabasToSession(session.payload.session_id, silabaQuestions, db)
   
-  if (!game.success) {
+  if (!game.content) {
     return {
       success: false,
       payload: {
-        message: game.payload.message,
+        message: game.message,
         game: null
       }
     }

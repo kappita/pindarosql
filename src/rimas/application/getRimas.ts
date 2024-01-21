@@ -1,9 +1,10 @@
 import { Connection } from "@planetscale/database";
 import { rimaSet, rimaResponse, rimaSetResponse } from "./types";
+import { Optional } from "../../shared/types";
 
 
 
-export async function getRimas(amount: number, db: Connection) {
+export async function getRimas(amount: number, db: Connection): Promise<Optional<rimaSet[]>> {
   // const minimumCorrectAnswers = Math.floor(Math.random() * amount / 3);
 
   const rimasQuery = await db.execute(`
@@ -12,21 +13,17 @@ export async function getRimas(amount: number, db: Connection) {
   const rimas = rimasQuery.rows as rimaResponse[]
   const rimaSets = selectRimas(rimas, amount)
 
-  return rimaSets
+  return rimaSets;
 }
 
 // TODO: FIND A WAY TO MAKE SURE THERE ARE AT LEAST X RHYMES
-function selectRimas(rimas: rimaResponse[], totalRhymes: number): rimaSetResponse {
+function selectRimas(rimas: rimaResponse[], totalRhymes: number): Optional<rimaSet[]> {
   const random = Math.floor((Math.random() * totalRhymes * 2 / 5) + (totalRhymes * 3 / 5));
 
   if (rimas.length < totalRhymes * 2) {
-    const payload = {
-      message: "Not enough rhymes in database",
-      rimaSets: null
-    }
     return {
-      success: false,
-      payload: payload
+      content: null,
+      message: "Not enough rhymes in database",
     }
   }
 
@@ -47,11 +44,8 @@ function selectRimas(rimas: rimaResponse[], totalRhymes: number): rimaSetRespons
   console.log('Agregadas las faltantes')
   
   return {
-    success: true,
-    payload: {
-      message: "Rhymes retrieved successfully",
-      rimaSets: shuffle(selectedRhymes)
-    }
+    message: "Rhymes retrieved successfully",
+    content: shuffle(selectedRhymes)
   }
 }
 

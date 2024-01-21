@@ -1,16 +1,12 @@
-import type { Connection } from "@planetscale/database";
+import { authenticateJWT } from "./authenticateJWT"
 
-export async function validateAdmin(email: string, password: string,  db: Connection) {
-  const query = await db.execute(`
-    SELECT is_admin FROM User WHERE email = "${email}" AND password = "${password}" AND is_admin = 1;
-  `);
-  if (query.rows.length < 1) {
-    return {
-      success: false
-    }
+export async function validateAdmin(token: string, env: Bindings) {
+  const creds = await authenticateJWT(token, env);
+
+  if (!creds.content || !creds.content.is_admin) {
+    return false
   }
-  return {
-    success: true
-  }
+
+  return true
 }
 

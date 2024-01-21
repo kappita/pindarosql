@@ -8,17 +8,17 @@ import { selectSchema } from "./optionSchemas"
 
 export async function startGame(difficulty: number, db: Connection) {
   let rows = await getAcentuales(difficulty, 10, db)
-  if (!rows.success || !rows.payload.acentuales) {
+  if (!rows.content) {
     return {
       success: false,
       payload: {
-        message: rows.payload.message,
+        message: rows.message,
         game: null
       }
     }
   }
 
-  const acentualQuestions: acentualQuestion[] = rows.payload.acentuales.map(e => {
+  const acentualQuestions: acentualQuestion[] = rows.content.map(e => {
     const schema = selectSchema(e.answer, difficulty)
     return {
             id: e.word_id, phrase: e.phrase, word: e.word, word_pos: e.word_pos, options: schema.options, option_schema_id: schema.schemaId
@@ -40,11 +40,11 @@ export async function startGame(difficulty: number, db: Connection) {
 
   const game = await addAcentualesToSession(session.payload.session_id, acentualQuestions, db)
   
-  if (!game.success) {
+  if (!game.content) {
     return {
       success: false,
       payload: {
-        message: game.payload.message,
+        message: game.message,
         game: null
       }
     }

@@ -1,7 +1,8 @@
 import type { Connection, ExecutedQuery } from "@planetscale/database";
 import { acentual, acentualPreGame } from "./types";
+import { Optional } from "../../shared/types";
 
-export async function getAcentuales(difficulty: number, amount: number, db: Connection) {
+export async function getAcentuales(difficulty: number, amount: number, db: Connection): Promise<Optional<acentual[]>> {
   let acentualQuery: ExecutedQuery
   switch (difficulty) {
     case 0:
@@ -17,15 +18,13 @@ export async function getAcentuales(difficulty: number, amount: number, db: Conn
 
   if (acentualQuery.size < amount) {
     return {
-      success: false,
-      payload: {message: "Not enough questions to ask!", acentuales: null}
+      content: null,
+      message: "Not enough questions to ask!"
     }
   }
+
   return {
-    success: true,
-    payload: {
-      message: "Questions retreived successfully",
-      acentuales: acentualQuery.rows as acentual[]
-    }
+    message: "Questions retreived successfully",
+    content: acentualQuery.rows as acentual[]  
   };
 }

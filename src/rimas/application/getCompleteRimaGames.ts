@@ -1,22 +1,22 @@
 import { Connection } from "@planetscale/database";
 import { completeRimaGame, completeRimaGames, rimaResponse } from "./types";
 import { getRimaGames } from './getGames'
+import { Optional } from "../../shared/types";
 
 
 
-export async function getCompleteRimaGames(session_id: string, db: Connection): Promise<completeRimaGames> {
+export async function getCompleteRimaGames(session_id: string, db: Connection): Promise<Optional<completeRimaGame[]>> {
   const gamesWithWordsRequest = await getRimaGames(session_id, db)
-  if (!gamesWithWordsRequest.payload.rimaGames) {
+  if (!gamesWithWordsRequest.content) {
     const payload = {
-      message: gamesWithWordsRequest.payload.message,
       rimaGames: null
     }
     return {
-      success: false,
-      payload: payload
+      message: gamesWithWordsRequest.message,
+      content: null
     }
   }
-  const games = gamesWithWordsRequest.payload.rimaGames
+  const games = gamesWithWordsRequest.content
   const acentualIds = games.map(e => {
     const bothIds = `Rima.id = ${e.word_a_id} 
                      OR Rima.id = ${e.word_b_id}`
@@ -32,11 +32,8 @@ export async function getCompleteRimaGames(session_id: string, db: Connection): 
   const phrasesQuery = await db.execute(query)
   if (phrasesQuery.size == 0) {
     return {
-      success: false,
-      payload: {
-        message: "No words found from given games!",
-        rimaGames: null
-      }
+      message: "No words found from given games!",
+      content: null
     }
   }
   const rimas = phrasesQuery.rows as rimaResponse[]
@@ -49,13 +46,12 @@ export async function getCompleteRimaGames(session_id: string, db: Connection): 
       console.log(JSON.stringify(rimas))
       console.log(JSON.stringify(games))
       const payload = {
-        message: "Error while trying to find the word of one of the games",
         rimaGames: null
       }
-
+      
       return {
-        success: false,
-        payload: payload
+        message: "Error while trying to find the word of one of the games",
+        content: null
       }
     }
     
@@ -68,10 +64,7 @@ export async function getCompleteRimaGames(session_id: string, db: Connection): 
     })
   }
   return {
-    success: true,
-    payload: {
-      message: "Games retrieved successfully",
-      rimaGames: completeAcentualGames
-    }
+    message: "Games retrieved successfully",
+    content: completeAcentualGames,
   }
 }

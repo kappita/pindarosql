@@ -6,16 +6,16 @@ export async function userExists(email: string, db: Connection) {
   if (userQuery.size == 0) {
     return {
       success: true,
+      message: "Checked user existance successfully",
       payload: {
-        message: "Checked user existance successfully",
         response: false
       }
     }
   }
   return {
     success: true,
+    message: "Checked user existance successfully",
     payload: {
-        message: "Checked user existance successfully",
         response: true
     }
   }

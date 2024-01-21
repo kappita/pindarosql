@@ -1,27 +1,22 @@
 import { Connection } from "@planetscale/database";
-import { userSubmit } from "../../shared/types";
+import { GameCorrections, Optional, userSubmit } from "../../shared/types";
 import { allOptions } from "./optionSchemas";
 import { uploadAnswers } from "./uploadAnswers";
-import { acentualSessionAnswers, acentualCorrection } from "./types";
+import { acentualSessionAnswers, acentualCorrection, corrections, SessionAnswers } from "./types";
 
 const scores = [ 100, 125, 150, 200 ]
 const answerStrings = [ "Sin respuesta", "Monosílabo átono", "Monosílabo tónico", "Bisílabo átono", "Aguda", "Grave", "Esdrújula", "Sobreesdrújula"]
 
-export async function checkAnswers(answers: userSubmit, sessionAnswers:acentualSessionAnswers, db: Connection) {
-  const questions = sessionAnswers.payload.answers!
-  const session_difficulty = sessionAnswers.payload.difficulty!
-  const creation_date = sessionAnswers.payload.creation_date!
+
+export async function checkAnswers(answers: userSubmit, sessionAnswers:SessionAnswers, env: Bindings, db: Connection): Promise<Optional<GameCorrections<acentualCorrection>>> {
+  const questions = sessionAnswers.answers
+  const session_difficulty = sessionAnswers.difficulty
+  const creation_date = sessionAnswers.creation_date
   
   if (answers.answers.length != questions.length) {
     return {
-      success: false,
-      payload: {
-        message: "Invalid answers for the question",
-        corrections: null,
-        score: null,
-        correct: null,
-        total: null
-      }
+      content: null,
+      message: "Invalid answers for the question",
     }
   }
 
@@ -33,15 +28,8 @@ export async function checkAnswers(answers: userSubmit, sessionAnswers:acentualS
     const answer = answers.answers.find(e => {return e.question_id === questions[i].word_id})
     if (!answer) {
       return {
-        success: false,
-        payload: {
-          message: "Invalid answers sent!",
-          corrections: null,
-          score: null,
-          correct: null,
-          total: null,
-          time: null
-        }
+        content: null,
+        message: "Invalid answers sent!",
       }
     }
     const is_correct = (questions[i].acentual_answer === answer.answer) ? true : false
@@ -66,36 +54,29 @@ export async function checkAnswers(answers: userSubmit, sessionAnswers:acentualS
 
   const uploadAnswersQuery = await uploadAnswers(corrections,
                                                  answers.session_id,
-                                                 answers.email,
-                                                 answers.password,
+                                                 answers.token,
                                                  score,
                                                  creation_date,
                                                  session_difficulty,
+                                                 env,
                                                  db)
-  if (!uploadAnswersQuery.success) {
+  if (!uploadAnswersQuery.content) {
     return {
-      success: false,
-      payload: {
-        message: "Answers were not stored successfully",
-        corrections: null,
-        score: null,
-        correct: null,
-        total: null,
-        time: null
-      }
+      content: null,
+      message: "Answers were not stored successfully",
     }
   }
 
+  const response = {
+    corrections: corrections,
+    score: score,
+    correct: correct,
+    total: questions.length,
+    time: uploadAnswersQuery.content
+  }
   return {
-    success: true,
-    payload: {
-      message: "All questions checked successfully",
-      corrections: corrections,
-      score: score,
-      correct: correct,
-      total: questions.length,
-      time: uploadAnswersQuery.payload.time!
-    }
+    content: response,
+    message: "All questions checked successfully",
   }
 
 

@@ -2,7 +2,8 @@ import { answerOption } from "../../shared/types";
 
 export type acentualResponse = {
   acentual_id: number,
-  acentual_phrase: string
+  acentual_phrase: string,
+  is_active: boolean
 }
 
 export type acentualSessionResponse = {
@@ -34,6 +35,11 @@ export type acentualGameWithWord = {
   word_pos: number
 }
 
+export type SessionAnswers = {
+  answers: completeAcentualGame[],
+  difficulty: number,
+  creation_date: Date
+}
 
 
 export type acentualQuestionResponse = {
@@ -134,3 +140,11 @@ export type acentualPreGame = {
   acentual_answer: number
 }
 
+
+export type corrections = {
+  corrections: acentualCorrection[],
+  score: number,
+  correct: number,
+  total: number,
+  time: string
+}

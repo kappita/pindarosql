@@ -2,25 +2,23 @@ import type { Connection } from "@planetscale/database";
 import { uploadSilabasSchema } from "../../shared/schemas"
 import { validateAdmin } from "../../shared/validateAdmin"
 
-export async function addSilaba(body: any, db: Connection) {
+export async function addSilaba(body: any, env: Bindings, db: Connection) {
   const bodyValidation = uploadSilabasSchema.safeParse(body);
 
   if (!bodyValidation.success) {
     return {
       success: false,
-      payload: {
-        message: bodyValidation.error
-      }
+      message: bodyValidation.error,
+      payload: null
     };
   }
   const data = bodyValidation.data
 
-  if (!(await validateAdmin(data.admin_email, data.admin_password, db)).success) {
+  if (!(await validateAdmin(data.token, env))) {
     return {
       success: false,
-      payload: {
-        message: "You have no authorization to do this!"
-      }
+      message: "You have no authorization to do this!",
+      payload: null
     }
   }
 
@@ -30,9 +28,8 @@ export async function addSilaba(body: any, db: Connection) {
   `);
   return {
     success: true,
-    payload: {
-      message: "Words uploaded successfully!"
-    }
+    message: "Words uploaded successfully!",
+    payload: null
   };
 }
 

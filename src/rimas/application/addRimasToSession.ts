@@ -1,26 +1,20 @@
 
-
-
 import type { Connection } from "@planetscale/database";
 import { bloqueRima, identificadorRima } from "../../rimas/application/rimas";
 import { rimaSet, rimaSetWithGame } from "./types";
+import { Optional } from "../../shared/types";
 
 
 export async function addRimasToSession(sessionId: string,
                                              questions: rimaSet[],
                                              option_schema_id: number,
-                                             db: Connection) {
+                                             db: Connection): Promise<Optional<rimaSetWithGame[]>> {
 
   return {
-    success: true,
-    payload: {
-      message: "Session games linked successfully!",
-      rimaGames: await getGameIds(sessionId, questions, option_schema_id, db)
-    }
+    message: "Session games linked successfully!",
+    content: await getGameIds(sessionId, questions, option_schema_id, db)
   };
 }
-
-
 
 
 async function getGameIds(sessionId: string, questions: rimaSet[], option_schema_id: number, db: Connection){

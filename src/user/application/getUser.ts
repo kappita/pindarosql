@@ -8,16 +8,14 @@ export async function getUserId(email: string, password: string, db: Connection)
   if (userQuery.size == 0) {
     return {
       success: false,
-      payload: {
-        message: "User credentials do not exist in database",
-        id: null
-      }
+      message: "User credentials do not exist in database",
+      payload: {}
     }
   }
   return {
     success: true,
+    message: "Successfully logged in!",
     payload: {
-        message: "Successfully logged in!",
         ... userQuery.rows[0] as {id: number}
         
     }

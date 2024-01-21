@@ -1,49 +1,38 @@
 
 import { Connection } from "@planetscale/database"
-import { rimaSessionAnswers } from "./types"
+import { SessionAnswers } from "./types"
 import { getSession } from "./getSession"
 import { getCompleteRimaGames } from "./getCompleteRimaGames";
+import { Optional } from "../../shared/types";
 
 
 
-export async function getRimaSessionAnswers(session_id: string, db: Connection): Promise<rimaSessionAnswers> {
+export async function getRimaSessionAnswers(session_id: string, db: Connection): Promise<Optional<SessionAnswers>> {
   const session = await getSession(session_id, db);
-  const sessionPayload = {
-    message: session.payload.message,
-    answers: null,
-    difficulty: null,
-    creation_date: null
-  }
-
-  if (!session.payload.session) {
+  if (!session.content) {
     return {
-      success: false,
-      payload: sessionPayload
+      message: session.message,
+      content: null
     }
   }
 
   const games = await getCompleteRimaGames(session_id, db);
-  const gamesPayload = {
-    message: games.payload.message,
-    answers: null,
-    difficulty: null,
-    creation_date: null
-  }
   
-  if (!games.payload.rimaGames) {
+  if (!games.content) {
     return {
-      success: false,
-      payload: gamesPayload
+      message: games.message,
+      content: null
     }
   }
 
+  const payload = {
+    answers: games.content,
+    difficulty: session.content.session_difficulty,
+    creation_date: session.content.creation_date
+    
+  }
   return {
-    success: true,
-    payload: {
-      message: "Session's questions successfully retrieved",
-      answers: games.payload.rimaGames,
-      difficulty: session.payload.session.session_difficulty,
-      creation_date: session.payload.session?.creation_date
-    }
+    message: "Session's questions successfully retrieved",
+    content: payload
   }
 }

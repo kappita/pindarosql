@@ -6,6 +6,7 @@ import { addAcentual } from '../application/addAcentual';
 import { cors } from 'hono/cors';
 import { getAllAcentuales } from '../application/getAllAcentuales';
 import { deleteAcentuales } from '../application/deleteAcentuales';
+import { activateAcentuales } from '../application/activateAcentuales';
 
 export function getDatabaseConfig(env: Bindings) {
   return {
@@ -43,7 +44,7 @@ acentual.get("/start/:difficulty", async (c) => {
 acentual.post("/submit", async (c) => {
   const conn = connect(getDatabaseConfig(c.env))
   const body = await c.req.json()
-  const submit = await submitAnswers(body, conn)
+  const submit = await submitAnswers(body, c.env, conn)
   if (!submit.success) {
     return c.json({success: false, payload: submit.payload}, 400)
   }
@@ -55,7 +56,7 @@ acentual.post("/submit", async (c) => {
 acentual.post("/uploadAcentual", async (c) => {
   const conn = connect(getDatabaseConfig(c.env))
   const body = await c.req.json()
-  const upload = await addAcentual(body, conn)
+  const upload = await addAcentual(body, c.env, conn)
   if (!upload.success) {
     return c.json({success: false, payload: upload.payload.message}, 400)
   }
@@ -65,7 +66,7 @@ acentual.post("/uploadAcentual", async (c) => {
 acentual.post("/allAcentuales", async (c) => {
   const conn = connect(getDatabaseConfig(c.env))
   const body = await c.req.json()
-  const acentuales = await getAllAcentuales(body, conn)
+  const acentuales = await getAllAcentuales(body, c.env, conn)
   if (!acentuales.success) {
     return c.json({success: false, payload: acentuales.payload.message}, 400)
   }
@@ -75,12 +76,24 @@ acentual.post("/allAcentuales", async (c) => {
 acentual.post("/deleteAcentuales", async (c) => {
   const conn = connect(getDatabaseConfig(c.env))
   const body = await c.req.json()
-  const acentuales = await deleteAcentuales(body, conn)
+  const acentuales = await deleteAcentuales(body, c.env, conn)
   if (!acentuales.success) {
     return c.json({success: false, payload: acentuales.payload.message}, 400)
   }
   return c.json({success: true, payload: acentuales.payload}, 200)
 })
+
+acentual.post("/activateAcentuales", async (c) => {
+  const conn = connect(getDatabaseConfig(c.env))
+  const body = await c.req.json()
+  const acentuales = await activateAcentuales(body, c.env, conn)
+  if (!acentuales.success) {
+    return c.json({success: false, payload: acentuales.payload.message}, 400)
+  }
+  return c.json({success: true, payload: acentuales.payload}, 200)
+})
+
+
 
 export default acentual
 

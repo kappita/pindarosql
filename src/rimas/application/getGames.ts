@@ -1,8 +1,9 @@
 import { Connection } from "@planetscale/database";
 import { rimaGames, rimaGame } from "./types";
+import { Optional } from "../../shared/types";
 
 
-export async function getRimaGames(session_id: string, db: Connection): Promise<rimaGames>{
+export async function getRimaGames(session_id: string, db: Connection): Promise<Optional<rimaGame[]>>{
 
 
   const gameQuery = await db.execute(`SELECT RimaGame.id game_id,
@@ -15,18 +16,12 @@ export async function getRimaGames(session_id: string, db: Connection): Promise<
 
   if (gameQuery.size == 0) {
     return {
-      success: false,
-      payload: {
-        message: "No games found with such session id!",
-        rimaGames: null
-      }
+      content: null,
+      message: "No games found with such session id!",
     }
   }
   return {
-    success: true,
-    payload: {
-      message: "Games retrieved successfully",
-      rimaGames: gameQuery.rows as rimaGame[]
-    }
+    message: "Games retrieved successfully",
+    content: gameQuery.rows as rimaGame[]
   }
 }

@@ -1,27 +1,32 @@
 import { Connection } from "@planetscale/database";
-import { userSubmit } from "../../shared/types";
+import { userSubmit, Optional, GameCorrections } from "../../shared/types";
 import { getAnswer, selectSchema } from "./optionSchemas";
 import { uploadAnswers } from "./uploadAnswers";
-import { rimaCorrection, rimaSessionAnswers } from "./types";
+import { SessionAnswers, rimaCorrection, rimaSessionAnswers } from "./types";
 
 const scores = [ 100, 125, 150, 200 ]
 
+type corrections = {
+  corrections: rimaCorrection[],
+  score: number,
+  correct: number,
+  total: number,
+  time: string
+}
 
-export async function checkAnswers(answers: userSubmit, sessionAnswers:rimaSessionAnswers, db: Connection) {
-  const questions = sessionAnswers.payload.answers!
-  const session_difficulty = sessionAnswers.payload.difficulty!
-  const creation_date = sessionAnswers.payload.creation_date!
+
+export async function checkAnswers(answers: userSubmit,
+                                   sessionAnswers:SessionAnswers,
+                                   env: Bindings,
+                                   db: Connection): Promise<Optional<GameCorrections<rimaCorrection>>> {
+  const questions = sessionAnswers.answers
+  const session_difficulty = sessionAnswers.difficulty
+  const creation_date = sessionAnswers.creation_date
   const answerStrings = selectSchema(session_difficulty).options
   if (answers.answers.length != questions.length) {
     return {
-      success: false,
-      payload: {
-        message: "Invalid answers for the question",
-        corrections: null,
-        score: null,
-        correct: null,
-        total: null
-      }
+      message:"Invalid answers for the question",
+      content: null
     }
   }
 
@@ -33,17 +38,12 @@ export async function checkAnswers(answers: userSubmit, sessionAnswers:rimaSessi
     const answer = answers.answers.find(e => {return e.question_id === questions[i].game_id})
     if (!answer) {
       return {
-        success: false,
-        payload: {
-          message: "Invalid answers sent!",
-          corrections: null,
-          score: null,
-          correct: null,
-          total: null,
-          time: null
-        }
-      }
+        message: "Invalid answers sent!",
+        content: null
+      } 
     }
+
+    
     let correctAnswer = questions[i].rima_answer
     if (session_difficulty === 0) {
       correctAnswer = correctAnswer > 2 ? 2 : correctAnswer;
@@ -54,8 +54,6 @@ export async function checkAnswers(answers: userSubmit, sessionAnswers:rimaSessi
       correct ++
 
     }
-
-
 
     corrections.push({
       game_id: questions[i].game_id,
@@ -72,31 +70,32 @@ export async function checkAnswers(answers: userSubmit, sessionAnswers:rimaSessi
     })
   }
   console.log("upload query")
-  const uploadAnswersQuery = await uploadAnswers(corrections, answers.session_id, answers.email, answers.password, score, creation_date, session_difficulty, db)
-  if (!uploadAnswersQuery.success) {
+  const uploadAnswersQuery = await uploadAnswers(corrections,
+                                                 answers.session_id,
+                                                 answers.token,
+                                                 score, 
+                                                 creation_date,
+                                                 session_difficulty,
+                                                 env,
+                                                 db)
+  if (!uploadAnswersQuery.content) {
     return {
-      success: false,
-      payload: {
-        message: "Answers were not stored successfully",
-        corrections: null,
-        score: null,
-        correct: null,
-        total: null,
-        time: null
-      }
+      message: uploadAnswersQuery.message,
+      content: null
     }
   }
 
+  const payload = {
+    corrections: corrections,
+    score: score,
+    correct: correct,
+    total: questions.length,
+    time: uploadAnswersQuery.content!
+  }
+
   return {
-    success: true,
-    payload: {
-      message: "All questions checked successfully",
-      corrections: corrections,
-      score: score,
-      correct: correct,
-      total: questions.length,
-      time: uploadAnswersQuery.payload.time!
-    }
+    message: "Invalid answers for the question",
+    content: payload
   }
 
 

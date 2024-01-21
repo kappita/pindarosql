@@ -3,7 +3,7 @@ import { z } from "zod";
 import { uploadAcentualSchema } from "../../shared/schemas"
 import { validateAdmin } from "../../shared/validateAdmin"
 
-export async function addAcentual(body: any, db: Connection) {
+export async function addAcentual(body: any, env: Bindings, db: Connection) {
   const bodyValidation = uploadAcentualSchema.safeParse(body);
 
   if (!bodyValidation.success) {
@@ -16,7 +16,7 @@ export async function addAcentual(body: any, db: Connection) {
   }
   const data = bodyValidation.data
 
-  if (!(await validateAdmin(data.admin_email, data.admin_password, db)).success) {
+  if (!(await validateAdmin(data.token, env))) {
     return {
       success: false,
       payload: {
